@@ -1,36 +1,39 @@
-
+const socket = io();
 
 const startEl = document.querySelector('#start');
-const gameWrapperEl = document.querySelector('#game-wrapper');
+const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
 
-
-//let room = null;
 let player = null;
 
-// get username and room from form and emit `user:joined` and then show chat
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    //room = playernameForm.room.value;
-    username = playernameForm.player.value;
+    console.log("hej från eventlistener")
+
+    player = playernameForm.playername.value;
 
     console.log(`User ${player} wants to join room'`);
 
+    console.log(status);
+
+
     // emit `user:joined` event and when we get acknowledgement, THEN show the chat
-    socket.emit('user:joined', player, (status) => {
+    socket.emit('player:joined', player, (status) => {
         // we've received acknowledgement from the server
-        console.log("Server acknowledged that user joined", status);
+        console.log("Server acknowledged that player joined", status);
+
 
         if (status.success) {
+            console.log("inside success")
             // hide start view
             startEl.classList.add('hide');
 
             // show chat view
             gameWrapperEl.classList.remove('hide');
 
-            // set room name as chat title
-            document.querySelector('#game-title').innerText = player;
+            document.querySelector('#player-name-title').innerText = player;
+
 
 
         }
