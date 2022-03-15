@@ -10,14 +10,14 @@ const gamesessions = [
     {
         id: 'noob',
         name: 'Noob',
-        users: {}, 
+        players: {},
     },
     {
         id: 'veteran',
         name: 'Veteran',
-        users: {}, 
+        players: {},
     },
-    
+
 ];
 
 let io = null;
@@ -30,24 +30,27 @@ const handleUserJoined = function (playername, gamesession_id, callback) {
     debug(`Player ${playername} with socket id ${this.id} joined session ${gamesession_id} `);
 
     // join room
-	 this.join(gamesession_id);
+    this.join(gamesession_id);
 
-     // a) find room object with `id` === `general`
-	 const gamesession = gamesessions.find(chatroom => chatroom.id === gamesession_id)
+    // a) find room object with `id` === `general`
+    const gamesession = gamesessions.find(chatroom => chatroom.id === gamesession_id)
 
-     // b) add socket to room's `users` object
-	 gamesession.users[this.id] = playername;
+    // b) add socket to room's `players` object
+    gamesession.players[this.id] = playername;
 
 
     // let everyone know that someone has connected to the game
     this.broadcast.to(gamesession.id).emit('user:connected', playername);
 
+
     // confirm join
     callback({
         success: true,
         sessionName: gamesession.name,
-		users: gamesession.users
+        players: gamesession.players
     });
+
+    this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
 
 }
 
@@ -58,7 +61,7 @@ const handleDisconnect = function () {
     this.broadcast.emit('player:disconnected', player[this.id]);
     console.log("hej från disconnect")
 
-    // remove user from list of connected users
+    // remove user from list of connected players
     delete player[this.id];
 }
 

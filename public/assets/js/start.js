@@ -6,6 +6,16 @@ const playernameForm = document.querySelector('#playername-form');
 let player = null;
 let gamesession = null;
 
+// update user list
+const updatePlayerList = player => {
+    document.querySelector('#player-name-title').innerHTML =
+        Object.values(player).map(playername => `<li><span class="fa-solid fa-user-astronaut"></span> ${playername}</li>`).join("");
+}
+
+socket.on('players:list', players => {
+    updatePlayerList(players);
+})
+
 
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -33,6 +43,8 @@ playernameForm.addEventListener('submit', e => {
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = player;
+
+            updatePlayerList(status.players);
 
 
 
