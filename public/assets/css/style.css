@@ -9,6 +9,12 @@
 	background-color: aliceblue;
 }
 
+#thegame{
+	background-color:rgb(150, 150, 219); 
+	height: 70vh; 
+	width: 80vw; 
+}
+
 .hide {
 	display: none !important;
 }
