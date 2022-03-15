@@ -22,7 +22,7 @@ playernameForm.addEventListener('submit', e => {
         if (status.success) {
             console.log("inside success")
             // hide start view
-            startEl.classList.add('hide');
+            startEl.classList.add('display-none');
 
             //show game view 
             gameWrapperEl.classList.remove('hide');
