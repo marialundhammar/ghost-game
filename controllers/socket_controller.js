@@ -10,12 +10,20 @@ const gamesessions = [
     {
         id: 'noob',
         name: 'Noob',
+<<<<<<< HEAD
         players: {},
+=======
+        players: {}, 
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
     },
     {
         id: 'veteran',
         name: 'Veteran',
+<<<<<<< HEAD
         players: {},
+=======
+        players: {}, 
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
     },
 
 ];
@@ -35,8 +43,13 @@ const handleUserJoined = function (playername, gamesession_id, callback) {
     // a) find room object with `id` === `general`
     const gamesession = gamesessions.find(chatroom => chatroom.id === gamesession_id)
 
+<<<<<<< HEAD
     // b) add socket to room's `players` object
     gamesession.players[this.id] = playername;
+=======
+     // b) add socket to room's `players` object
+	 gamesession.players[this.id] = playername;
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
 
 
     // let everyone know that someone has connected to the game
@@ -47,10 +60,18 @@ const handleUserJoined = function (playername, gamesession_id, callback) {
     callback({
         success: true,
         sessionName: gamesession.name,
+<<<<<<< HEAD
         players: gamesession.players
     });
 
     this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
+=======
+		players: gamesession.players
+    });
+
+    // broadcast list of users in room to all connected sockets EXCEPT ourselves
+	 this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
 
 }
 

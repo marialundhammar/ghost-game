@@ -7,6 +7,7 @@ let player = null;
 let gamesession = null;
 
 // update user list
+<<<<<<< HEAD
 const updatePlayerList = player => {
     document.querySelector('#player-name-title').innerHTML =
         Object.values(player).map(playername => `<li><span class="fa-solid fa-user-astronaut"></span> ${playername}</li>`).join("");
@@ -14,6 +15,16 @@ const updatePlayerList = player => {
 
 socket.on('players:list', players => {
     updatePlayerList(players);
+=======
+const updateUserList = players => {
+	document.querySelector('#online-players').innerHTML =
+		Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
+}
+
+// listen for when we receive an updated list of online users (in this room)
+socket.on('players:list', players => {
+	updateUserList(players);
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
 })
 
 
@@ -44,7 +55,12 @@ playernameForm.addEventListener('submit', e => {
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = player;
 
+<<<<<<< HEAD
             updatePlayerList(status.players);
+=======
+            // update list of users in room
+			updateUserList(status.players);
+>>>>>>> 663b7e27de0dd23c34fcf969ced3364e016ca6ce
 
 
 
