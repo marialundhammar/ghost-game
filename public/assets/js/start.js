@@ -8,28 +8,26 @@ let gamesession = null;
 
 // update user list
 const updateUserList = players => {
-	document.querySelector('#online-players').innerHTML =
-		Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
+    document.querySelector('#online-players').innerHTML =
+        Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
 }
 
 // listen for when we receive an updated list of online users (in this room)
 socket.on('players:list', players => {
-	updateUserList(players);
+    updateUserList(players);
 })
 
 
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    gamesession = playernameForm.game_session_choice.value;
-
     player = playernameForm.playername.value;
 
-    console.log(`User ${player} wants to join room ${gamesession}'`);
+    console.log(`User ${player} wants to join`);
 
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
-    socket.emit('player:joined', player, gamesession, (status) => {
+    socket.emit('player:joined', player, (status) => {
         // we've received acknowledgement from the server
         console.log("Server acknowledged that player joined", status);
 
@@ -46,9 +44,7 @@ playernameForm.addEventListener('submit', e => {
             document.querySelector('#player-name-title').innerText = player;
 
             // update list of users in room
-			updateUserList(status.players);
-
-
+            updateUserList(status.gamesession.players);
 
         }
     });
