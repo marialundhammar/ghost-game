@@ -38,7 +38,7 @@ const handleUserJoined = function (playername, callback) {
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
-        }
+        } 
     })
 
     // If no empty room found, create a new one and add to gamesession array.
@@ -62,7 +62,9 @@ const handleUserJoined = function (playername, callback) {
 
     // broadcast list of users in room to all connected sockets EXCEPT ourselves
     this.broadcast.to(joinRoomId).emit('players:list', gamesession.players);
+
 }
+
 
 const handleDisconnect = function () {
     debug(`Client ${this.id} disconnected :(`);
