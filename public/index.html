@@ -30,6 +30,8 @@
 
         <!-- Start game -->
         <div id="start" class="container">
+            <img id="ghostbusters-logo" src="/assets/imgs/ghostbusters.png" alt="">
+            <h1 id="start-title">BUST A GHOST</h1>
             <form id="playername-form">
                 <div class="mb-3">
                     <input type="text" id="playername" class="form-control form-control-lg" required
@@ -49,17 +51,20 @@
 
 
         <div id="game-board" class="hide">
-            <div id="game-wrapper" class="m-3">
+            <div id="game-wrapper">
                 <h2 id="game-title">Bust a ghost</h2>
-                <div id="thegame" class="m-3">
+                <div id="thegame">
                     <div id="ghost">👻</div>
                 </div>
             </div>
 
 
-            <div id="scoreboard">
-                <h1 id="player-name-title">Name</h1>
-                <h2>Scoreboard</h2>
+            <div id="score-board">
+                <div>
+                    <h1 id="player-name-title">Name</h1>
+                </div>
+                <div>
+                    <h2>Scoreboard</h2>
                 <h2 id="test"></h2>
                 <div>
                     <h2 id="player-name-title">Players</h2>
@@ -67,6 +72,8 @@
                     <h2>Your time:</h2>
                     <h3 id="time-text"></h3>
                 </div>
+                </div>
+                <div></div>
             </div>
 
         </div>

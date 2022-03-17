@@ -7,6 +7,7 @@ const playernameForm = document.querySelector('#playername-form');
 let player = null;
 let gamesession = null;
 
+
 //GAME VARIABLES
 let start = new Date().getTime();
 let time_text = document.getElementById('time-text');
@@ -47,6 +48,8 @@ socket.on('players:list', players => {
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
+    //Add background music
+
     player = playernameForm.playername.value;
 
     console.log(`User ${player} wants to join`);
@@ -79,6 +82,9 @@ playernameForm.addEventListener('submit', e => {
 
 
 const gameFunction = () => {
+    audio = new Audio('/assets/songs/gummibar.mp3');
+
+    audio.play();
     console.log('Height and width of grid: ' + gridWidth, gridHeight);
 
     //Function for random number

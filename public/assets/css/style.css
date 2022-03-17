@@ -5,12 +5,12 @@
 	margin: 0;
 	overflow-x: hidden;
 	overflow-y: hidden;
-	color: white;
+}
+
+body {
 	background-color: black;
 }
 
-
-#app,
 #start, 
 #waiting-screen
 {
@@ -29,18 +29,20 @@
 	flex-direction: column;
 }
 
-#waiting-screen {
+#waiting-screen,
+#start-title {
 	font-family: 'Fredoka One', cursive;
+	color: white;
 }
 
-#app {
-	background-color: rgb(0, 0, 0);
+#ghostbusters-logo {
+	width: 30%;
 }
 
 #thegame{
 	background-color:rgb(150, 150, 219); 
 	height: 80vh; 
-	width: 70vw; 
+	width: 80vw; 
 	position: relative;
 }
 
@@ -72,58 +74,33 @@
 #game-board{
 	display: flex;
 	height: 100vh;
+	width: 100vw;
 	font-family: 'Fredoka One', cursive;
+	justify-content: space-around;
 }
 
-#game-title {
+
+#game-title, 
+#start-title {
 	font-size: 4rem;
+	padding: 1em;
+	color: white;
 }
 
-
+#score-board {
+	background-color: white;
+	color: black;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
+	width: 20vw;
+}
 
 #time-text {
 	font-family: 'VT323', monospace;
 	color: black;
 	background-color: white;
+	padding: 10px;
 }
-
-
-.lds-ring {
-	display: inline-block;
-	position: relative;
-	width: 80px;
-	height: 80px;
-  }
-  .lds-ring div {
-	box-sizing: border-box;
-	display: block;
-	position: absolute;
-	width: 64px;
-	height: 64px;
-	margin: 8px;
-	border: 8px solid #fff;
-	border-radius: 50%;
-	animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-	border-color: #fff transparent transparent transparent;
-  }
-  .lds-ring div:nth-child(1) {
-	animation-delay: -0.45s;
-  }
-  .lds-ring div:nth-child(2) {
-	animation-delay: -0.3s;
-  }
-  .lds-ring div:nth-child(3) {
-	animation-delay: -0.15s;
-  }
-  @keyframes lds-ring {
-	0% {
-	  transform: rotate(0deg);
-	}
-	100% {
-	  transform: rotate(360deg);
-	}
-  }
-  
-
-
 
