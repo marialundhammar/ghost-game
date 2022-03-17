@@ -33,6 +33,9 @@ const updateUserList = players => {
             gameWrapperEl.classList.remove('hide');
 
             gameFunction();
+
+            
+            
         }
 }
 
@@ -40,6 +43,43 @@ const updateUserList = players => {
 socket.on('players:list', players => {
     updateUserList(players);
 })
+
+let gamestatus;
+let playerRound = [];
+
+/*
+socket.on('next:round', (readystatus, playerid) => {
+    gamestatus=readystatus;
+    console.log('inside next round, this is the status '+gamestatus)
+    console.log('The player who klicked: '+playerid);
+})
+*/
+
+
+socket.on('player:point', playerid => {
+    console.log('The player who klicked: '+playerid);
+    //let objekt=playerRound.find(obj => obj === playerid);
+    //console.log(playerRound)
+    //console.log(objekt)
+    
+    /*
+    if (playerRound.find(obj => obj === playerid)) {
+        console.log('Both players clicked!');
+        
+    } else if(!playerRound.find(obj => obj === playerid)) {
+        playerRound.push(playerid);
+    }
+    */
+    
+})
+
+socket.on('player:win', winningTime => {
+    console.log('The winning time: '+winningTime);
+    gameFunction();
+})
+
+
+
 
 
 
@@ -59,6 +99,7 @@ playernameForm.addEventListener('submit', e => {
 
         if (status.success) {
             console.log("inside success")
+            gamesession=status.gamesession;
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = player;
@@ -79,24 +120,26 @@ const gameFunction = () => {
      return Math.random() * (max - min) + min;
      } 
    
-   //FUNCTION TO MAKE GHOST APPEAR
+         //FUNCTION TO MAKE GHOST APPEAR
    function makeGhostAppear() {
+
+    //randomize position
+    randomTop = getRandomNumber(0, gridHeight);
+    randomLeft = getRandomNumber(0, gridWidth)
+
+  console.log("Randomleft: " + randomLeft);
+
+  ghost.style.left = randomLeft + 'px';
+  ghost.style.top = randomTop + 'px'
+
+  console.log(ghost);
+
+  //show ghost
+  ghost.classList.remove('hide');
+  start = new Date().getTime();
+  gamestatus=false;
+}
    
-     //randomize position
-     randomTop = getRandomNumber(0, gridHeight);
-     randomLeft = getRandomNumber(0, gridWidth)
-   
-     console.log("Randomleft: " + randomLeft);
-   
-     ghost.style.left = randomLeft + 'px';
-     ghost.style.top = randomTop + 'px'
-   
-     console.log(ghost);
-   
-     //show ghost
-     ghost.classList.remove('hide');
-     start = new Date().getTime();
-   }
    
    let randomDelay = getRandomNumber(0, 5000);
    //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
@@ -117,6 +160,8 @@ const gameFunction = () => {
      time_text.innerHTML = timeTaken + " seconds";
    
      myTimeout();
+
+     socket.emit('player:points', timeTaken, gamesession.id);
    
    }
    }

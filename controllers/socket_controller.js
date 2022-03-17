@@ -21,6 +21,56 @@ const gamesessions = [];
 
 let io = null;
 
+/*
+let pointCheck=[];
+
+const handlePlayerPoints = function (playerpoints, gamesessionid) {
+    debug(`This is my time! ${playerpoints} `);
+    debug(`This is the session! ${gamesessionid} `);
+
+    if (pointCheck.length<2) {
+        pointCheck.push(playerpoints);
+        this.emit('player:point', this.id);
+        //playerpoints[this.id]=playerpoints;
+    } else {
+        console.log('new round should start');
+        pointCheck=[];
+        pointCheck.push(playerpoints);
+        this.emit('next:round', true, this.id);
+    }
+    console.log(pointCheck);
+    //console.log(gamesessions);
+    console.log(this.id);
+
+    //this.emit('next:round', true);
+    //this.broadcast.to(gamesessionid).emit('next:round', true);
+}
+*/
+let pointCheck=[];
+
+const handlePlayerPoints = function (playerpoints, gamesessionid) {
+    debug(`This is my time! ${playerpoints} `);
+    debug(`This is the session! ${gamesessionid} `);
+
+    //Den som är på index 0 vinner 
+
+    if (pointCheck.length<2) {
+        pointCheck.push(playerpoints);
+        this.emit('player:point', this.id);
+        //playerpoints[this.id]=playerpoints;
+    } else {
+        this.emit('player:win', pointCheck[0]);
+        console.log('new round should start');
+        pointCheck=[];
+        pointCheck.push(playerpoints);
+        this.emit('next:round', true, this.id);
+    }
+
+    
+    console.log(pointCheck);
+
+}
+
 
 const handleUserJoined = function (playername, callback) {
     // associate socket id with playername
@@ -101,6 +151,8 @@ module.exports = function (socket, _io) {
 
     // handle user joined
     socket.on('player:joined', handleUserJoined);
+
+    socket.on('player:points', handlePlayerPoints);
 
 
 
