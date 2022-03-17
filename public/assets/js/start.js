@@ -1,5 +1,6 @@
 const socket = io();
 const startEl = document.querySelector('#start');
+const waitingEl = document.querySelector('#waiting-screen')
 const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
 
@@ -26,8 +27,8 @@ const updateUserList = players => {
         if (Object.keys(players).length == 2) {
             console.log("Two players!");
              
-            //hide start view
-            startEl.classList.add('display-none');
+            //hide waiting view
+            waitingEl.classList.add('display-none');
             
              //show game view 
             gameWrapperEl.classList.remove('hide');
@@ -59,6 +60,12 @@ playernameForm.addEventListener('submit', e => {
 
         if (status.success) {
             console.log("inside success")
+
+             //remove start view
+             startEl.classList.add('display-none');
+
+             //show waiting view
+             waitingEl.classList.remove('hide');
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = player;

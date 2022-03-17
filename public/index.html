@@ -39,6 +39,15 @@
             </form>
         </div>
 
+        <!-- Waiting screen -->
+        <div id="waiting-screen" class="hide">
+            <div id="waiting-wrapper">
+                <h1>Waiting for opponent...</h1>
+                <img id="ghost-animation" src="/assets/imgs/ghost.gif" alt="Loading ghost">
+            </div>
+        </div>
+
+
         <div id="game-board" class="hide">
             <div id="game-wrapper" class="m-3">
                 <h2 id="game-title">Bust a ghost</h2>
@@ -53,12 +62,11 @@
                 <h2>Scoreboard</h2>
                 <h2 id="test"></h2>
                 <div>
-                    <h1 id="player-name-title">Name</h1>
+                    <h2 id="player-name-title">Players</h2>
                     <ul id="online-players"></ul>
                     <h2>Your time:</h2>
                     <h3 id="time-text"></h3>
                 </div>
-
             </div>
 
         </div>
