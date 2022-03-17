@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
 * {
 	padding: 0;
 	margin: 0;
@@ -26,13 +28,6 @@
 	position: relative;
 }
 
-.ghost {
-	position: absolute;
-	width: 50px;
-	height: 50px;
-	font-size: 30px;
-	background-color: transparent;
-}
 
 .hide {
 	visibility: hidden !important;
@@ -48,9 +43,11 @@
 }
 
 #ghost {
-	height: 50px;
+	height: 80px;
 	width: 50px;
-	background-color: white;
+	position: absolute;
+	font-size: 50px;
+	background: transparent;
 }
 
 #game-board{
@@ -58,6 +55,12 @@
 	height: 100vh;
 }
 
+
+#time-text {
+	font-family: 'VT323', monospace;
+	color: black;
+	background-color: white;
+}
 
 
 

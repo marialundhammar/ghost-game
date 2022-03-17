@@ -1,35 +1,58 @@
+let start = new Date().getTime();
+let time_text = document.getElementById('time-text');
+const ghost = document.getElementById("ghost");
 const grid = document.querySelector('#thegame')
-const ghost = document.createElement('div')
 
-//get window width and height
-let gridWidth = grid.clientWidth;
-let gridHeight = grid.clientHeight;
+//get grid width and height
+let gridWidth = grid.clientWidth-50;
+let gridHeight = grid.clientHeight-50;
+
 
 console.log('Height and width of grid: ' + gridWidth, gridHeight);
 
-//! Risk that the ghost is not fully visible, add inner padding?
-
-//Function for random number
-function getRandomNumber(min, max) {
-    return Math.random() * (max - min) + min;
+ //Function for random number
+ function getRandomNumber(min, max) {
+  return Math.random() * (max - min) + min;
   }
 
-//Function to create ghost
-function createGhost() {
-    grid.appendChild(ghost);
-    ghost.classList.add('ghost')
+//FUNCTION TO MAKE GHOST APPEAR
+function makeGhostAppear() {
 
-    // get random numbers for each element
-    randomTop = getRandomNumber(0, gridHeight);
-    randomLeft = getRandomNumber(0, gridWidth)
+  //randomize position
+  randomTop = getRandomNumber(0, gridHeight);
+  randomLeft = getRandomNumber(0, gridWidth)
 
-    ghost.style.left = randomLeft + 'px'
-    ghost.style.top = randomTop + 'px'
+  console.log("Randomleft: " + randomLeft);
 
-    //Try to add background image instead?
-    ghost.innerText = '👻'
+  ghost.style.left = randomLeft + 'px';
+  ghost.style.top = randomTop + 'px'
 
-    console.log("Ghost created");
+  console.log(ghost);
+
+  //show ghost
+  ghost.classList.remove('hide');
+  start = new Date().getTime();
 }
 
-createGhost()
+let randomDelay = getRandomNumber(0, 5000);
+//TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
+function myTimeout() {
+  setTimeout(makeGhostAppear, randomDelay);
+} 
+
+myTimeout();
+
+
+// Ghost disappear on click
+ghost.onclick = function() {
+  ghost.classList.add('hide');
+  var end = new Date().getTime();
+  var timeTaken = (end - start)/1000; //time in seconds
+
+  console.log(timeTaken);
+  time_text.innerHTML = timeTaken + " seconds";
+
+  myTimeout();
+
+}
+
