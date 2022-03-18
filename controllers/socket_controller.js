@@ -46,23 +46,27 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
     //this.broadcast.to(gamesessionid).emit('next:round', true);
 }
 */
+let pointtracker;
+
 let pointCheck = [];
 
-const handlePlayerPoints = function (playerpoints, gamesessionid) {
-    debug(`This is my time! ${playerpoints} `);
+const handlePlayerPoints = function (playertime, gamesessionid) {
+    debug(`This is my time! ${playertime} `);
     debug(`This is the session! ${gamesessionid} `);
 
     //Den som är på index 0 vinner 
 
     const id = this.id;
+    //let point=0;
 
-    pointCheck.push({ point: playerpoints, id: id });
-    this.emit('player:point', this.id, playerpoints);
+    pointCheck.push({ time: playertime, id: id, point: pointtracker });
+    this.emit('player:point', this.id, playertime, pointtracker);
     console.log(pointCheck);
 
 
     //playerpoints[this.id]=playerpoints; 
     if (pointCheck.length == 2) {
+        pointtracker++
         io.to(gamesessionid).emit('player:win', pointCheck[0]);
         //this.emit('player:looser', pointCheck[1]);
 
@@ -80,11 +84,13 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
 }
 
 
-const handleUserJoined = function (playername, callback) {
+const handleUserJoined = function (playername, point, callback) {
     // associate socket id with playername
     playername[this.id] = playername;
     // Declare a room id that the player should join.
     let joinRoomId;
+
+    pointtracker=point;
 
     debug(`Player ${playername} with socket id ${this.id} joined`);
 

@@ -72,8 +72,8 @@ socket.on('next:round', (readystatus, playerid) => {
 */
 
 
-socket.on('player:point', (playerid, playerpoints) => {
-    console.log('The player who klicked: ', playerid, "with the time ", playerpoints);
+socket.on('player:point', (playerid, playerpoints, score) => {
+    console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "with the score ", score);
     //let objekt=playerRound.find(obj => obj === playerid);
     //console.log(playerRound)
     //console.log(objekt)
@@ -99,9 +99,11 @@ playernameForm.addEventListener('submit', e => {
 
     console.log(`User ${player} wants to join`);
 
+    let point=1;
+
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
-    socket.emit('player:joined', player, (status) => {
+    socket.emit('player:joined', player, point, (status) => {
         // we've received acknowledgement from the server
         console.log("Server acknowledged that player joined", status);
 
@@ -166,7 +168,7 @@ function myTimeout() {
 
 
 socket.on('player:win', (pointCheck) => {
-    console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
+    console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.time + "the winning time " + pointCheck.time + "current score " + pointCheck.point);
     gameFunction();
 
 })
