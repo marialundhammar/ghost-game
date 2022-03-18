@@ -1,11 +1,13 @@
 const socket = io();
 const startEl = document.querySelector('#start');
+const waitingEl = document.querySelector('#waiting-screen')
 const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
 
 
 let player = null;
 let gamesession = null;
+
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -23,6 +25,18 @@ let gridHeight = grid.clientHeight - 50;
 const updateUserList = players => {
     document.querySelector('#online-players').innerHTML =
         Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
+        console.log(players);
+        if (Object.keys(players).length == 2) {
+            console.log("Two players!");
+             
+            //hide waiting view
+            waitingEl.classList.add('display-none');
+            
+             //show game view 
+            gameWrapperEl.classList.remove('hide');
+
+            gameFunction();
+        }
     console.log(players);
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
@@ -79,6 +93,8 @@ socket.on('player:point', (playerid, playerpoints) => {
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
+    //Add background music
+
     player = playernameForm.playername.value;
 
     console.log(`User ${player} wants to join`);
@@ -93,6 +109,12 @@ playernameForm.addEventListener('submit', e => {
         if (status.success) {
             console.log("inside success")
             gamesession = status.gamesession;
+
+             //remove start view
+             startEl.classList.add('display-none');
+
+             //show waiting view
+             waitingEl.classList.remove('hide');
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = player;
@@ -157,6 +179,9 @@ socket.on('player:win', (pointCheck) => {
 
 
 const gameFunction = () => {
+    audio = new Audio('/assets/songs/gummibar.mp3');
+
+    audio.play();
     console.log('Height and width of grid: ' + gridWidth, gridHeight);
 
     getRandomNumber();
