@@ -8,6 +8,7 @@ const playernameForm = document.querySelector('#playername-form');
 let player = null;
 let gamesession = null;
 
+audio = new Audio('/assets/songs/gummibar.mp3');
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -16,6 +17,12 @@ const ghost = document.getElementById("ghost");
 const grid = document.querySelector('#thegame');
 
 let game = false;
+
+//TIMER FUNCTION
+let milliseconds = 0;
+let seconds = 0;
+let timerDisplay = document.querySelector('#timer-display');
+let int;
 
 //get grid width and height
 let gridWidth = grid.clientWidth - 50;
@@ -48,9 +55,6 @@ const updateUserList = players => {
         gameWrapperEl.classList.remove('hide');
 
         gameFunction();
-
-
-
 
     }
 }
@@ -93,8 +97,6 @@ socket.on('player:point', (playerid, playerpoints) => {
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    //Add background music
-
     player = playernameForm.playername.value;
 
     console.log(`User ${player} wants to join`);
@@ -126,6 +128,21 @@ playernameForm.addEventListener('submit', e => {
     });
 });
 
+//DISPLAY TIMER FUNCTION
+const displayTimer = () => {
+  milliseconds+=10;
+  if(milliseconds == 1000){
+    milliseconds = 0;
+    seconds++;
+    //Maybe add if it takes more than 60 seconds the game end?
+  }
+  let s = seconds < 10 ? "0" + seconds : seconds;
+  let ms = milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds;
+
+  timerDisplay.innerHTML = `${s} : ${ms}`;
+  console.log(ms)
+}
+
 //Function for random number
 function getRandomNumber(min, max) {
     return Math.random() * (max - min) + min;
@@ -147,9 +164,13 @@ function makeGhostAppear() {
 
     //show ghost
     ghost.classList.remove('hide');
-    start = new Date().getTime();
+
+    //start timer
+    int = setInterval(displayTimer, 10);
+  
     gamestatus = false;
 }
+
 let randomDelay = getRandomNumber(0, 5000);
 
 //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
@@ -174,41 +195,27 @@ socket.on('player:win', (pointCheck) => {
 
 
 
-
-
-
-
 const gameFunction = () => {
-    audio = new Audio('/assets/songs/gummibar.mp3');
-
-    audio.play();
-    console.log('Height and width of grid: ' + gridWidth, gridHeight);
 
     getRandomNumber();
 
-
     makeGhostAppear();
-
-
-
 
     // Ghost disappear on click
     ghost.onclick = function () {
         ghost.classList.add('hide');
-        var end = new Date().getTime();
-        var timeTaken = (end - start) / 1000; //time in seconds
+        
+        //pause interval and save the time in timeTAKEN
+        //! does not work
+        clearInterval(int);
 
         console.log(timeTaken);
-        time_text.innerHTML = timeTaken + " seconds";
+        time_text.innerHTML = timeTaken;
 
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
     }
-
-
-
-
 
 
 }
