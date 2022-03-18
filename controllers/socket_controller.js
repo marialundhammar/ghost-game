@@ -61,9 +61,11 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
     console.log(pointCheck);
 
 
-    //playerpoints[this.id]=playerpoints;
-    if (pointCheck.length === 2) {
-        this.emit('player:win', pointCheck[0]);
+    //playerpoints[this.id]=playerpoints; 
+    if (pointCheck.length == 2) {
+        io.to(gamesessionid).emit('player:win', pointCheck[0]);
+        //this.emit('player:looser', pointCheck[1]);
+
         console.log('new round should start');
         pointCheck = [];
         console.log("end of round", true)

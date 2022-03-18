@@ -33,8 +33,8 @@ const updateUserList = players => {
         //show game view 
         gameWrapperEl.classList.remove('hide');
 
-
         gameFunction();
+
 
 
 
@@ -74,11 +74,6 @@ socket.on('player:point', (playerid, playerpoints) => {
     */
 
 })
-
-
-
-
-
 
 
 playernameForm.addEventListener('submit', e => {
@@ -133,6 +128,31 @@ function makeGhostAppear() {
     start = new Date().getTime();
     gamestatus = false;
 }
+let randomDelay = getRandomNumber(0, 5000);
+
+//TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
+function myTimeout() {
+    setTimeout(makeGhostAppear, randomDelay);
+}
+
+/* socket.on('player:looser', (pointCheck) => {
+    console.log('The loosingId: ' + pointCheck.id + "the loosing time " + pointCheck.point);
+    gameFunction();
+
+}) */
+
+
+
+socket.on('player:win', (pointCheck) => {
+    console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
+    gameFunction();
+
+})
+
+
+
+
+
 
 
 
@@ -145,13 +165,6 @@ const gameFunction = () => {
     makeGhostAppear();
 
 
-    let randomDelay = getRandomNumber(0, 5000);
-    //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
-    function myTimeout() {
-        setTimeout(makeGhostAppear, randomDelay);
-    }
-
-    myTimeout();
 
 
     // Ghost disappear on click
@@ -163,8 +176,6 @@ const gameFunction = () => {
         console.log(timeTaken);
         time_text.innerHTML = timeTaken + " seconds";
 
-        myTimeout();
-
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
@@ -173,43 +184,6 @@ const gameFunction = () => {
 
 
 
-    socket.on('player:win', (pointCheck) => {
-        console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
-
-
-        getRandomNumber();
-
-
-        makeGhostAppear();
-
-
-        let randomDelay = getRandomNumber(0, 5000);
-        //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
-        function myTimeout() {
-            setTimeout(makeGhostAppear, randomDelay);
-        }
-
-        myTimeout();
-
-
-        // Ghost disappear on click
-        ghost.onclick = function () {
-            ghost.classList.add('hide');
-            var end = new Date().getTime();
-            var timeTaken = (end - start) / 1000; //time in seconds
-
-            console.log(timeTaken);
-            time_text.innerHTML = timeTaken + " seconds";
-
-            myTimeout();
-
-
-            socket.emit('player:points', timeTaken, gamesession.id);
-
-        }
-
-
-    })
 
 
 }
