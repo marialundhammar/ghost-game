@@ -49,6 +49,8 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
 let pointtracker;
 
 let pointCheck = [];
+let trackerofpoints = [];
+let onlineplayers=[];
 
 const handlePlayerPoints = function (playertime, gamesessionid) {
     debug(`This is my time! ${playertime} `);
@@ -68,7 +70,25 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     if (pointCheck.length == 2) {
         pointtracker++
         io.to(gamesessionid).emit('player:win', pointCheck[0]);
+        trackerofpoints.push(pointCheck[0].id);
         //this.emit('player:looser', pointCheck[1]);
+        console.log('This is tracker of points ',trackerofpoints);
+
+        function getOccurrence(array, value) {
+            var count = 0;
+            array.forEach((v) => (v === value && count++));
+            return count;
+        }
+
+        console.log('This is the id ',this.id)
+        console.log('This is the online players ',onlineplayers)
+
+        
+        console.log('Player one: '+onlineplayers[0],getOccurrence(trackerofpoints, onlineplayers[0]))
+       
+        console.log('Player two: '+onlineplayers[1],getOccurrence(trackerofpoints, onlineplayers[1]))
+        
+
 
         console.log('new round should start');
         pointCheck = [];
@@ -89,6 +109,8 @@ const handleUserJoined = function (playername, point, callback) {
     playername[this.id] = playername;
     // Declare a room id that the player should join.
     let joinRoomId;
+
+    onlineplayers.push(this.id);
 
     pointtracker=point;
 
@@ -150,6 +172,7 @@ const handleDisconnect = function () {
     this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
 
     //If a user disconnect end game! 
+    trackerofpoints=[];
 }
 
 
