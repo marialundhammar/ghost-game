@@ -2,7 +2,7 @@
  * Socket Controller
  */
 
-const debug = require('debug')('chat:socket_controller');
+const debug = require('debug')('ghost:socket_controller');
 
 //generate a id for the room
 function makeid(length) {
@@ -46,7 +46,7 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
     //this.broadcast.to(gamesessionid).emit('next:round', true);
 }
 */
-let pointCheck=[];
+let pointCheck = [];
 
 const handlePlayerPoints = function (playerpoints, gamesessionid) {
     debug(`This is my time! ${playerpoints} `);
@@ -54,20 +54,26 @@ const handlePlayerPoints = function (playerpoints, gamesessionid) {
 
     //Den som är på index 0 vinner 
 
-    if (pointCheck.length<2) {
-        pointCheck.push(playerpoints);
-        this.emit('player:point', this.id);
-        //playerpoints[this.id]=playerpoints;
-    } else {
+    const id = this.id;
+
+    pointCheck.push({ point: playerpoints, id: id });
+    this.emit('player:point', this.id, playerpoints);
+    console.log(pointCheck);
+
+
+    //playerpoints[this.id]=playerpoints;
+    if (pointCheck.length === 2) {
         this.emit('player:win', pointCheck[0]);
         console.log('new round should start');
-        pointCheck=[];
-        pointCheck.push(playerpoints);
-        this.emit('next:round', true, this.id);
+        pointCheck = [];
+        console.log("end of round", true)
+        /*       pointCheck.push({ point: playerpoints, id: id });*/
+        //this.emit('next:round', true, this.id);
     }
 
-    
-    console.log(pointCheck);
+
+
+
 
 }
 
@@ -88,7 +94,7 @@ const handleUserJoined = function (playername, callback) {
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
-        } 
+        }
     })
 
     // If no empty room found, create a new one and add to gamesession array.
