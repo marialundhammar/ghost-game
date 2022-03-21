@@ -24,7 +24,9 @@ let game = false;
 //TIMER FUNCTION
 let startTime;
 let timerDisplay = document.querySelector('#timer-display');
+let timerDisplayTwo = document.querySelector('#timer-display-two');
 let int;
+let intTwo;
 
 //get grid width and height
 let gridWidth;
@@ -69,13 +71,6 @@ socket.on('players:list', players => {
 let gamestatus;
 let playerRound = [];
 
-/*
-socket.on('next:round', (readystatus, playerid) => {
-    gamestatus=readystatus;
-    console.log('inside next round, this is the status '+gamestatus)
-    console.log('The player who klicked: '+playerid);
-})
-*/
 
 let playerId;
 let currentTurn;
@@ -85,19 +80,6 @@ socket.on('player:point', (playerid, playerpoints, turn) => {
     console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "on turn ", turn);
     currentTurn=turn;
     playerId=playerid;
-    //let objekt=playerRound.find(obj => obj === playerid);
-    //console.log(playerRound)
-    //console.log(objekt)
-
-    /*
-    if (playerRound.find(obj => obj === playerid)) {
-        console.log('Both players clicked!');
-        
-    } else if(!playerRound.find(obj => obj === playerid)) {
-        playerRound.push(playerid);
-    }
-    */
-
 })
 
 
@@ -141,21 +123,34 @@ playernameForm.addEventListener('submit', e => {
 //TIMER FUNCTIONS
 function startTimer() {
   pause();
+  pauseTwo();
   startTime = Date.now();
 
   int = setInterval(function() {
     let elapsedTime = Date.now() - startTime;
     timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+    //timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
+  }, 10)
+
+  intTwo = setInterval(function() {
+    let elapsedTime = Date.now() - startTime;
+    //timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+    timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
   }, 10)
 }
 function pause() {
   clearInterval(int);
 }
 
+function pauseTwo() {
+    clearInterval(intTwo);
+  }
+
 function reset() {
   seconds = 0;
   milliseconds = 0;
   timerDisplay.innerHTML = `00 : 00`;
+  timerDisplayTwo.innerHTML = `00 : 00`;
 }
 
 //Function for random number
@@ -195,6 +190,13 @@ let randomDelay = getRandomNumber(0, 5000);
 function myTimeout() {
     setTimeout(makeGhostAppear, randomDelay);
 }
+
+socket.on('player:time', (playertime) => {
+    console.log('OTHER PLAYER TIME '+playertime);
+    pauseTwo();
+    timerDisplayTwo.innerHTML=playertime;
+
+})
 
 socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
     console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
