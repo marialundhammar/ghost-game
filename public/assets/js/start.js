@@ -164,14 +164,6 @@ function myTimeout() {
     setTimeout(makeGhostAppear, randomDelay);
 }
 
-/* socket.on('player:looser', (pointCheck) => {
-    console.log('The loosingId: ' + pointCheck.id + "the loosing time " + pointCheck.point);
-    gameFunction();
-
-}) */
-
-
-
 socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
     console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
 
@@ -179,8 +171,6 @@ socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
     const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
     score1.innerHTML=myPlayer.points+' -';
     score2.innerHTML=otherPlayer.points;
-
-    //theScore.innerHTML = winningplayer.points + " - " + loosingplayer.points;
 
     console.log('This is the player id: '+playerId)
     if (currentTurn<3) {

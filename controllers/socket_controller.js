@@ -20,32 +20,6 @@ function makeid(length) {
 const gamesessions = [];
 
 let io = null;
-
-/*
-let pointCheck=[];
-
-const handlePlayerPoints = function (playerpoints, gamesessionid) {
-    debug(`This is my time! ${playerpoints} `);
-    debug(`This is the session! ${gamesessionid} `);
-
-    if (pointCheck.length<2) {
-        pointCheck.push(playerpoints);
-        this.emit('player:point', this.id);
-        //playerpoints[this.id]=playerpoints;
-    } else {
-        console.log('new round should start');
-        pointCheck=[];
-        pointCheck.push(playerpoints);
-        this.emit('next:round', true, this.id);
-    }
-    console.log(pointCheck);
-    //console.log(gamesessions);
-    console.log(this.id);
-
-    //this.emit('next:round', true);
-    //this.broadcast.to(gamesessionid).emit('next:round', true);
-}
-*/
 let pointtracker;
 
 let pointCheck = [];
@@ -90,15 +64,6 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
         console.log('winning player', winningplayer);
 
-        //let player1score=getOccurrence(trackerofpoints, onlineplayers[0]);
-
-        //let player2score=getOccurrence(trackerofpoints, onlineplayers[1]);
-        
-
-        //console.log('Player one: '+player1score)
-       
-        //console.log('Player two: '+player2score)
-
         io.to(gamesessionid).emit('player:win', winningplayer, loosingplayer, onlineplayers);
         //this.emit('player:looser', pointCheck[1]);
         console.log('This is tracker of points ',trackerofpoints);
@@ -108,8 +73,6 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
         console.log('new round should start');
         pointCheck = [];
         console.log("end of round", true)
-        /*       pointCheck.push({ point: playerpoints, id: id });*/
-        //this.emit('next:round', true, this.id);
     }
 
 
