@@ -19,14 +19,13 @@ const grid = document.querySelector('#thegame');
 let game = false;
 
 //TIMER FUNCTION
-let milliseconds = 0;
-let seconds = 0;
+let startTime;
 let timerDisplay = document.querySelector('#timer-display');
 let int;
 
 //get grid width and height
-let gridWidth = grid.clientWidth - 50;
-let gridHeight = grid.clientHeight - 50;
+let gridWidth;
+let gridHeight;
 
 // update user list
 const updateUserList = players => {
@@ -128,19 +127,25 @@ playernameForm.addEventListener('submit', e => {
     });
 });
 
-//DISPLAY TIMER FUNCTION
-const displayTimer = () => {
-  milliseconds+=10;
-  if(milliseconds == 1000){
-    milliseconds = 0;
-    seconds++;
-    //Maybe add if it takes more than 60 seconds the game end?
-  }
-  let s = seconds < 10 ? "0" + seconds : seconds;
-  let ms = milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds;
 
-  timerDisplay.innerHTML = `${s} : ${ms}`;
-  console.log(ms)
+//TIMER FUNCTIONS
+function startTimer() {
+  pause();
+  startTime = Date.now();
+
+  int = setInterval(function() {
+    let elapsedTime = Date.now() - startTime;
+    timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+  }, 10)
+}
+function pause() {
+  clearInterval(int);
+}
+
+function reset() {
+  seconds = 0;
+  milliseconds = 0;
+  timerDisplay.innerHTML = `00 : 00`;
 }
 
 //Function for random number
@@ -150,6 +155,9 @@ function getRandomNumber(min, max) {
 
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
+
+   gridWidth = grid.clientWidth - 50;
+   gridHeigth = grid.clientHeight - 50;
 
     //randomize position
     randomTop = getRandomNumber(0, gridHeight);
@@ -166,7 +174,7 @@ function makeGhostAppear() {
     ghost.classList.remove('hide');
 
     //start timer
-    int = setInterval(displayTimer, 10);
+    startTimer();
   
     gamestatus = false;
 }
@@ -185,14 +193,14 @@ function myTimeout() {
 }) */
 
 
-
 socket.on('player:win', (pointCheck) => {
     console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
+    //Reset timer
+    reset();
+    //Game function runs
     gameFunction();
 
 })
-
-
 
 
 const gameFunction = () => {
@@ -207,21 +215,17 @@ const gameFunction = () => {
         
         //pause interval and save the time in timeTAKEN
         //! does not work
-        clearInterval(int);
+        pause();
 
-        console.log(timeTaken);
-        time_text.innerHTML = timeTaken;
+        let timeTaken = timerDisplay.innerHTML 
+        console.log("This is the time taken:", timeTaken);
+  
 
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
     }
 
-
 }
-
-
-
-
 
 
