@@ -14,6 +14,9 @@ let start = new Date().getTime();
 let time_text = document.getElementById('time-text');
 const ghost = document.getElementById("ghost");
 const grid = document.querySelector('#thegame');
+let theScore = document.getElementById('score');
+let score1 = document.getElementById('player1');
+let score2 = document.getElementById('player2');
 
 let game = false;
 
@@ -49,9 +52,6 @@ const updateUserList = players => {
 
         gameFunction();
 
-
-
-
     }
 }
 
@@ -71,9 +71,14 @@ socket.on('next:round', (readystatus, playerid) => {
 })
 */
 
+let playerId;
+let currentTurn;
 
-socket.on('player:point', (playerid, playerpoints, score) => {
-    console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "with the score ", score);
+
+socket.on('player:point', (playerid, playerpoints, turn) => {
+    console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "on turn ", turn);
+    currentTurn=turn;
+    playerId=playerid;
     //let objekt=playerRound.find(obj => obj === playerid);
     //console.log(playerRound)
     //console.log(objekt)
@@ -167,11 +172,26 @@ function myTimeout() {
 
 
 
-socket.on('player:win', (pointCheck) => {
-    console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.time + "the winning time " + pointCheck.time + "current score " + pointCheck.point);
-    gameFunction();
+socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
+    console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
+
+    const myPlayer = bothplayers.find(obj => obj.id === playerId);
+    const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
+    score1.innerHTML=myPlayer.points+' -';
+    score2.innerHTML=otherPlayer.points;
+
+    //theScore.innerHTML = winningplayer.points + " - " + loosingplayer.points;
+
+    console.log('This is the player id: '+playerId)
+    if (currentTurn<3) {
+        gameFunction();
+    } else {
+        alert('game over')
+    }
 
 })
+
+
 
 
 

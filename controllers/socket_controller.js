@@ -68,27 +68,42 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
     //playerpoints[this.id]=playerpoints; 
     if (pointCheck.length == 2) {
-        pointtracker++
-        io.to(gamesessionid).emit('player:win', pointCheck[0]);
-        trackerofpoints.push(pointCheck[0].id);
-        //this.emit('player:looser', pointCheck[1]);
-        console.log('This is tracker of points ',trackerofpoints);
-
+        
         function getOccurrence(array, value) {
             var count = 0;
             array.forEach((v) => (v === value && count++));
             return count;
         }
 
-        console.log('This is the id ',this.id)
-        console.log('This is the online players ',onlineplayers)
+        pointtracker++
 
+        console.log('pointtracker', pointtracker)
         
-        console.log('Player one: '+onlineplayers[0],getOccurrence(trackerofpoints, onlineplayers[0]))
+        //trackerofpoints.push(pointCheck[0].id);
+        const winningplayer = onlineplayers.find(obj => obj.id === pointCheck[0].id);
+        winningplayer['points']++;
+        winningplayer['time']=playertime;
+
+        const loosingplayer = onlineplayers.find(obj => obj.id === pointCheck[1].id);
+
+        console.log('online players', onlineplayers);
+
+        console.log('winning player', winningplayer);
+
+        //let player1score=getOccurrence(trackerofpoints, onlineplayers[0]);
+
+        //let player2score=getOccurrence(trackerofpoints, onlineplayers[1]);
+        
+
+        //console.log('Player one: '+player1score)
        
-        console.log('Player two: '+onlineplayers[1],getOccurrence(trackerofpoints, onlineplayers[1]))
-        
+        //console.log('Player two: '+player2score)
 
+        io.to(gamesessionid).emit('player:win', winningplayer, loosingplayer, onlineplayers);
+        //this.emit('player:looser', pointCheck[1]);
+        console.log('This is tracker of points ',trackerofpoints);
+
+        console.log('This is the id ',this.id);
 
         console.log('new round should start');
         pointCheck = [];
@@ -110,7 +125,7 @@ const handleUserJoined = function (playername, point, callback) {
     // Declare a room id that the player should join.
     let joinRoomId;
 
-    onlineplayers.push(this.id);
+    onlineplayers.push({id: this.id, name: playername, points: 0, time: 0});
 
     pointtracker=point;
 
