@@ -8,6 +8,7 @@ const playernameForm = document.querySelector('#playername-form');
 let player = null;
 let gamesession = null;
 
+audio = new Audio('/assets/songs/gummibar.mp3');
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -17,9 +18,14 @@ const grid = document.querySelector('#thegame');
 
 let game = false;
 
+//TIMER FUNCTION
+let startTime;
+let timerDisplay = document.querySelector('#timer-display');
+let int;
+
 //get grid width and height
-let gridWidth = grid.clientWidth - 50;
-let gridHeight = grid.clientHeight - 50;
+let gridWidth;
+let gridHeight;
 
 // update user list
 const updateUserList = players => {
@@ -48,9 +54,6 @@ const updateUserList = players => {
         gameWrapperEl.classList.remove('hide');
 
         gameFunction();
-
-
-
 
     }
 }
@@ -93,8 +96,6 @@ socket.on('player:point', (playerid, playerpoints) => {
 playernameForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    //Add background music
-
     player = playernameForm.playername.value;
 
     console.log(`User ${player} wants to join`);
@@ -126,6 +127,27 @@ playernameForm.addEventListener('submit', e => {
     });
 });
 
+
+//TIMER FUNCTIONS
+function startTimer() {
+  pause();
+  startTime = Date.now();
+
+  int = setInterval(function() {
+    let elapsedTime = Date.now() - startTime;
+    timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+  }, 10)
+}
+function pause() {
+  clearInterval(int);
+}
+
+function reset() {
+  seconds = 0;
+  milliseconds = 0;
+  timerDisplay.innerHTML = `00 : 00`;
+}
+
 //Function for random number
 function getRandomNumber(min, max) {
     return Math.random() * (max - min) + min;
@@ -133,6 +155,9 @@ function getRandomNumber(min, max) {
 
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
+
+   gridWidth = grid.clientWidth - 50;
+   gridHeigth = grid.clientHeight - 50;
 
     //randomize position
     randomTop = getRandomNumber(0, gridHeight);
@@ -147,9 +172,13 @@ function makeGhostAppear() {
 
     //show ghost
     ghost.classList.remove('hide');
-    start = new Date().getTime();
+
+    //start timer
+    startTimer();
+  
     gamestatus = false;
 }
+
 let randomDelay = getRandomNumber(0, 5000);
 
 //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
@@ -164,57 +193,39 @@ function myTimeout() {
 }) */
 
 
-
 socket.on('player:win', (pointCheck) => {
     console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
+    //Reset timer
+    reset();
+    //Game function runs
     gameFunction();
 
 })
 
 
-
-
-
-
-
-
 const gameFunction = () => {
-    audio = new Audio('/assets/songs/gummibar.mp3');
-
-    audio.play();
-    console.log('Height and width of grid: ' + gridWidth, gridHeight);
 
     getRandomNumber();
 
-
     makeGhostAppear();
-
-
-
 
     // Ghost disappear on click
     ghost.onclick = function () {
         ghost.classList.add('hide');
-        var end = new Date().getTime();
-        var timeTaken = (end - start) / 1000; //time in seconds
+        
+        //pause interval and save the time in timeTAKEN
+        //! does not work
+        pause();
 
-        console.log(timeTaken);
-        time_text.innerHTML = timeTaken + " seconds";
+        let timeTaken = timerDisplay.innerHTML 
+        console.log("This is the time taken:", timeTaken);
+  
 
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
     }
 
-
-
-
-
-
 }
-
-
-
-
 
 
