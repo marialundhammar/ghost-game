@@ -15,6 +15,9 @@ let start = new Date().getTime();
 let time_text = document.getElementById('time-text');
 const ghost = document.getElementById("ghost");
 const grid = document.querySelector('#thegame');
+let theScore = document.getElementById('score');
+let score1 = document.getElementById('player1');
+let score2 = document.getElementById('player2');
 
 let game = false;
 
@@ -74,9 +77,14 @@ socket.on('next:round', (readystatus, playerid) => {
 })
 */
 
+let playerId;
+let currentTurn;
 
-socket.on('player:point', (playerid, playerpoints) => {
-    console.log('The player who klicked: ', playerid, "with the time ", playerpoints);
+
+socket.on('player:point', (playerid, playerpoints, turn) => {
+    console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "on turn ", turn);
+    currentTurn=turn;
+    playerId=playerid;
     //let objekt=playerRound.find(obj => obj === playerid);
     //console.log(playerRound)
     //console.log(objekt)
@@ -100,9 +108,11 @@ playernameForm.addEventListener('submit', e => {
 
     console.log(`User ${player} wants to join`);
 
+    let point=1;
+
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
-    socket.emit('player:joined', player, (status) => {
+    socket.emit('player:joined', player, point, (status) => {
         // we've received acknowledgement from the server
         console.log("Server acknowledged that player joined", status);
 
@@ -186,22 +196,22 @@ function myTimeout() {
     setTimeout(makeGhostAppear, randomDelay);
 }
 
-/* socket.on('player:looser', (pointCheck) => {
-    console.log('The loosingId: ' + pointCheck.id + "the loosing time " + pointCheck.point);
-    gameFunction();
+socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
+    console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
 
-}) */
+    const myPlayer = bothplayers.find(obj => obj.id === playerId);
+    const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
+    score1.innerHTML=myPlayer.points+' -';
+    score2.innerHTML=otherPlayer.points;
 
-
-socket.on('player:win', (pointCheck) => {
-    console.log('The winning id: ' + pointCheck.id + "the winning time " + pointCheck.point);
-    //Reset timer
-    reset();
-    //Game function runs
-    gameFunction();
-
+    console.log('This is the player id: '+playerId)
+    if (currentTurn<3) {
+        reset();
+        gameFunction();
+    } else {
+        alert('game over')
+    }
 })
-
 
 const gameFunction = () => {
 
@@ -227,5 +237,3 @@ const gameFunction = () => {
     }
 
 }
-
-
