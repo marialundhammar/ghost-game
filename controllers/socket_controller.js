@@ -91,11 +91,15 @@ const handleUserJoined = function (playername, point, callback) {
     // Declare a room id that the player should join.
     let joinRoomId;
 
-    onlineplayers.push({id: this.id, name: playername, points: 0, time: 0});
+    if (onlineplayers.length<2) {
+        onlineplayers.push({id: this.id, name: playername, points: 0, time: 0}); 
+    }
 
     pointtracker=point;
 
     debug(`Player ${playername} with socket id ${this.id} joined`);
+    console.log('This is the initial online players', onlineplayers);
+    console.log('Length of online', onlineplayers.length);
 
     // Loop through gamesessions to find an empty room
     gamesessions.forEach((gamesession) => {
@@ -134,6 +138,7 @@ const handleUserJoined = function (playername, point, callback) {
 
 
 const handleDisconnect = function () {
+    onlineplayers=[];
     debug(`Client ${this.id} disconnected :(`);
 
     const gamesession = gamesessions.find(gamesession => gamesession.players.hasOwnProperty(this.id));
