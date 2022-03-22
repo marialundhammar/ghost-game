@@ -21,6 +21,7 @@ let score2 = document.getElementById('player2');
 
 let game = false;
 
+
 //TIMER FUNCTION
 let startTime;
 let timerDisplay = document.querySelector('#timer-display');
