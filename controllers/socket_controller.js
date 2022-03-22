@@ -20,80 +20,62 @@ function makeid(length) {
 const gamesessions = [];
 
 let io = null;
-let pointtracker;
-
-let pointCheck = [];
-let trackerofpoints = [];
+let turns;
+let playerClicks = [];
 let onlineplayers=[];
 
+//Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
     debug(`This is my time! ${playertime} `);
     debug(`This is the session! ${gamesessionid} `);
 
-    //Den som är på index 0 vinner 
-
+    //Save the current players id
     const id = this.id;
-    //let point=0;
 
-    pointCheck.push({ time: playertime, id: id, point: pointtracker });
-    this.emit('player:point', this.id, playertime, pointtracker);
-    console.log(pointCheck);
+    //Push the players id, what turn it is and 
+    // the time it took for tyhe player to click on the ghost
+    playerClicks.push({ time: playertime, id: id, turn: turns });
+    this.emit('player:point', this.id, playertime, turns);
+    console.log('playerClicks ',playerClicks);
 
-    // emit `chat:message` event to everyone EXCEPT the sender
+    // emit your time to the other player
 	this.broadcast.to(gamesessionid).emit('player:time', playertime);
 
-
-    //playerpoints[this.id]=playerpoints; 
-    if (pointCheck.length == 2) {
+    //check if both players clicked on the ghost
+    if (playerClicks.length == 2) {
+        //add one to turn
+        turns++
         
-        function getOccurrence(array, value) {
-            var count = 0;
-            array.forEach((v) => (v === value && count++));
-            return count;
-        }
+        //check wich one of the players who are on index 0 (the winner)
+        const winningplayer = onlineplayers.find(obj => obj.id === playerClicks[0].id);
 
-        pointtracker++
-
-        console.log('pointtracker', pointtracker)
-        
-        //trackerofpoints.push(pointCheck[0].id);
-        const winningplayer = onlineplayers.find(obj => obj.id === pointCheck[0].id);
+        //add one point and the time
         winningplayer['points']++;
         winningplayer['time']=playertime;
 
-        const loosingplayer = onlineplayers.find(obj => obj.id === pointCheck[1].id);
+        // emit the winner and the players
+        io.to(gamesessionid).emit('player:win', winningplayer, onlineplayers);
 
-        console.log('online players', onlineplayers);
-
-        console.log('winning player', winningplayer);
-
-        io.to(gamesessionid).emit('player:win', winningplayer, loosingplayer, onlineplayers);
-        //this.emit('player:looser', pointCheck[1]);
-        console.log('This is tracker of points ',trackerofpoints);
-
-        console.log('This is the id ',this.id);
-
-        console.log('new round should start');
-        pointCheck = [];
-        console.log("end of round", true)
+        //reset playerclicks
+        playerClicks = [];
     }
-
-
-
-
-
 }
 
-
-const handleUserJoined = function (playername, point, callback) {
+//Handle the player when they join the game
+const handleUserJoined = function (playername, turn, callback) {
     // associate socket id with playername
     playername[this.id] = playername;
+
     // Declare a room id that the player should join.
     let joinRoomId;
 
-    onlineplayers.push({id: this.id, name: playername, points: 0, time: 0});
+    // If onlineplayers are less than two, add the new player
+    if (onlineplayers.length<2) {
+        onlineplayers.push({id: this.id, name: playername, points: 0, time: 0}); 
+    }
 
-    pointtracker=point;
+    //save the current turn
+    turns=turn;
 
     debug(`Player ${playername} with socket id ${this.id} joined`);
 
@@ -102,6 +84,7 @@ const handleUserJoined = function (playername, point, callback) {
         // Get the count of players in the room
         const clients = this.adapter.rooms.get(gamesession.id);
         const numClients = clients ? clients.size : 0;
+
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
@@ -129,11 +112,13 @@ const handleUserJoined = function (playername, point, callback) {
 
     // broadcast list of users in room to all connected sockets EXCEPT ourselves
     this.broadcast.to(joinRoomId).emit('players:list', gamesession.players);
-
 }
 
 
 const handleDisconnect = function () {
+    //reset the online players
+    onlineplayers=[];
+
     debug(`Client ${this.id} disconnected :(`);
 
     const gamesession = gamesessions.find(gamesession => gamesession.players.hasOwnProperty(this.id));
@@ -151,9 +136,6 @@ const handleDisconnect = function () {
     delete gamesession.players[this.id];
 
     this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
-
-    //If a user disconnect end game! 
-    trackerofpoints=[];
 }
 
 
@@ -163,15 +145,12 @@ module.exports = function (socket, _io) {
 
     io.emit("new-connection", "A new user connected");
 
-    // handle user disconnect
+    // handle player disconnect
     socket.on('disconnect', handleDisconnect);
 
-
-    // handle user joined
+    // handle player joined
     socket.on('player:joined', handleUserJoined);
 
+    // handle player score
     socket.on('player:points', handlePlayerPoints);
-
-
-
 }
