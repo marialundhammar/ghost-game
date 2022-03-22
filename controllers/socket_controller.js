@@ -39,6 +39,9 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     this.emit('player:point', this.id, playertime, pointtracker);
     console.log(pointCheck);
 
+    // emit `chat:message` event to everyone EXCEPT the sender
+	this.broadcast.to(gamesessionid).emit('player:time', playertime);
+
 
     //playerpoints[this.id]=playerpoints; 
     if (pointCheck.length == 2) {
