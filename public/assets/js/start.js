@@ -10,6 +10,10 @@ let gamesession = null;
 
 audio = new Audio('/assets/songs/gummibar.mp3');
 
+//Countdown
+const countdownEl = document.querySelector('#countdown');
+const countdownWrapper = document.querySelector('#countdown-wrapper');
+
 //GAME VARIABLES
 let start = new Date().getTime();
 let time_text = document.getElementById('time-text');
@@ -18,6 +22,7 @@ const grid = document.querySelector('#thegame');
 let theScore = document.getElementById('score');
 let score1 = document.getElementById('player1');
 let score2 = document.getElementById('player2');
+
 
 let game = false;
 
@@ -110,7 +115,7 @@ playernameForm.addEventListener('submit', e => {
              waitingEl.classList.remove('hide');
 
             //changing player-name-title to username 
-            document.querySelector('#player-name-title').innerText = player;
+            document.querySelector('#player-name-title').innerText = "🎮 " + player;
 
             // update list of users in room
             updateUserList(status.gamesession.players);
@@ -118,6 +123,7 @@ playernameForm.addEventListener('submit', e => {
         }
     });
 });
+
 
 
 //TIMER FUNCTIONS
@@ -184,7 +190,6 @@ function makeGhostAppear() {
     gamestatus = false;
 }
 
-let randomDelay = getRandomNumber(0, 5000);
 
 //TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
 function myTimeout() {
@@ -215,27 +220,38 @@ socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
     }
 })
 
+
 const gameFunction = () => {
 
-    getRandomNumber();
-
-    makeGhostAppear();
+   makeGhostAppear();
 
     // Ghost disappear on click
     ghost.onclick = function () {
         ghost.classList.add('hide');
         
-        //pause interval and save the time in timeTAKEN
-        //! does not work
+        //pause interval and save the time in timeTaken
         pause();
 
         let timeTaken = timerDisplay.innerHTML 
         console.log("This is the time taken:", timeTaken);
   
 
-
         socket.emit('player:points', timeTaken, gamesession.id);
 
     }
 
 }
+
+
+//Cursor function
+// function update(e){
+//     var x = e.clientX || e.touches[0].clientX
+//     var y = e.clientY || e.touches[0].clientY
+  
+//     document.documentElement.style.setProperty('--cursorX', x + 'px')
+//     document.documentElement.style.setProperty('--cursorY', y + 'px')
+//   }
+  
+//   document.addEventListener('mousemove',update)
+//   document.addEventListener('touchmove',update)
+  
