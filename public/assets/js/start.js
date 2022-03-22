@@ -91,11 +91,11 @@ playernameForm.addEventListener('submit', e => {
 
     console.log(`User ${player} wants to join`);
 
-    let point=1;
+    let turn=1;
 
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
-    socket.emit('player:joined', player, point, (status) => {
+    socket.emit('player:joined', player, turn, (status) => {
         // we've received acknowledgement from the server
         console.log("Server acknowledged that player joined", status);
 
@@ -199,8 +199,12 @@ socket.on('player:time', (playertime) => {
 
 })
 
-socket.on('player:win', (winningplayer, loosingplayer, bothplayers) => {
+socket.on('player:win', (winningplayer, bothplayers) => {
     console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
+
+
+    //console.log('THIS IS THE LOOSER', loosingplayer)
+    console.log('THIS IS BOTHPLAYERS', bothplayers)
 
     const myPlayer = bothplayers.find(obj => obj.id === playerId);
     const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
