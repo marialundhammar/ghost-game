@@ -162,7 +162,7 @@ function getRandomNumber(min, max) {
 function makeGhostAppear() {
 
    gridWidth = grid.clientWidth - 50;
-   gridHeigth = grid.clientHeight - 50;
+   gridHeight = grid.clientHeight - 50;
 
     //randomize position
     randomTop = getRandomNumber(0, gridHeight);
