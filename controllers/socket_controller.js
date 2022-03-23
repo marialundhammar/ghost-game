@@ -23,6 +23,7 @@ let io = null;
 let turns;
 let playerClicks = [];
 let onlineplayers = [];
+let thePlayers;
 
 //Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
@@ -73,7 +74,12 @@ const handleUserJoined = function (playername, turn, callback) {
 
     // If onlineplayers are less than two, add the new player
     if (onlineplayers.length < 2) {
-        onlineplayers.push({ id: this.id, name: playername, points: 0, time: 0 });
+        if (onlineplayers = onlineplayers.filter((item) => item.id !== this.id)) {
+            onlineplayers.push({ id: this.id, name: playername, points: 0, time: 0 });
+        }
+    } else {
+        onlineplayers[0]['points']=0;
+        onlineplayers[1]['points']=0;
     }
 
     //save the current turn
@@ -97,12 +103,16 @@ const handleUserJoined = function (playername, turn, callback) {
     // If no empty room found, create a new one and add to gamesession array.
     if (!joinRoomId) {
         joinRoomId = makeid(5);
-        gamesessions.push({ id: joinRoomId, players: {} });
+        gamesessions.push({ id: joinRoomId, players: [] });
     }
 
     // Find the gamesession and add the player to it
     const gamesession = gamesessions.find(obj => obj.id === joinRoomId);
-    gamesession.players = { ...gamesession.players, [this.id]: playername }
+    //gamesession.players = { ...gamesession.players, [this.id]: playername}
+    gamesession.players.push({id:[this.id], name: playername, time:0, point:0})
+
+    thePlayers=gamesession.players;
+    console.log('THIS IS THE PLAYERS', thePlayers)
 
     // Create or join an existing room with the joinRoomId.
     this.join(joinRoomId);
@@ -144,10 +154,22 @@ const handleDisconnect = function () {
 }
 
 const handleEndgame = function (session, player) {
-    //reset the online players
-    delete onlineplayers[player];
 
-    debug(`Client ${this.id} disconnected :(`);
+    const playerToRemove = onlineplayers.find(obj => obj.name === player);
+    console.log('THIS IS THE PLAYER I WANT REMOVED', playerToRemove)
+    //reset the online players
+
+    /*
+    let position=onlineplayers.indexOf(playerToRemove);
+    console.log(position);
+    */
+    //onlineplayers.splice(playerToRemove);
+    onlineplayers = onlineplayers.filter((item) => item !== playerToRemove);
+
+    console.log('THIS IS THE ONLINE PLAYERS WHEN REMOVED', onlineplayers);
+    //console.log('NEW ARRAY', newArray);
+
+    debug(`${player} disconnected :(`);
 
     const gamesession = gamesessions.find(gamesession => gamesession.players.hasOwnProperty(this.id));
 
@@ -157,7 +179,7 @@ const handleEndgame = function (session, player) {
 
     // let everyone connected know that user has disconnected
     this.broadcast.emit('player:disconnected', gamesession.players[this.id]);
-    console.log("hej från disconnect")
+    console.log("hej från remove selected player")
 
 
     // remove user from list of connected players

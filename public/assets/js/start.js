@@ -291,7 +291,6 @@ playAgain.addEventListener('reset', e => {
 
     e.preventDefault();
     socket.emit('player: delete', gamesession, player)
-    console.log('FROM PLAYER DELETE HIDGSDKJGSJKDFGDJAGJKDGJKADGJKDGAJKDGAJGD', player);
 
     playAgain.classList.add('hide');
     startEl.classList.remove('display-none');
