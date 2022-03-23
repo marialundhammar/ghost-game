@@ -12,7 +12,8 @@ audio = new Audio('/assets/songs/gummibar.mp3');
 
 //Countdown
 const countdownEl = document.querySelector('#countdown');
-const countdownWrapper = document.querySelector('#countdown-wrapper');
+const countdown = ['Ready..', 'Set..', 'GHOST!'];
+
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -52,21 +53,25 @@ const updateUserList = players => {
              //show game view 
             gameWrapperEl.classList.remove('hide');
 
+            //Countdown before game starts
+            var interval = 1000; // countdown delay time
+                countdown.forEach(function (el, index) {
+                setTimeout(function () {
+                    countdownEl.innerHTML = el;
+                    console.log(el);
+                    console.log("Inner html:", countdownEl.innerHTML);
+                }, index * interval);
+            });
+
+            //Hide countdown before game starts
+            setTimeout(function () {
+                countdownEl.innerHTML = "";
+                countdownEl.classList.add("display-none");
+            }, 3000);
+
+            //Start game
             gameFunction();
         }
-    console.log(players);
-    if (Object.keys(players).length == 2) {
-        console.log("Two players!");
-
-        //hide start view
-        startEl.classList.add('display-none');
-
-        //show game view 
-        gameWrapperEl.classList.remove('hide');
-
-        gameFunction();
-
-    }
 }
 
 // listen for when we receive an updated list of online users (in this room)
@@ -153,12 +158,15 @@ function pauseTwo() {
     clearInterval(intTwo);
   }
 
-function reset() {
-  seconds = 0;
-  milliseconds = 0;
-  timerDisplay.innerHTML = `00 : 00`;
-  timerDisplayTwo.innerHTML = `00 : 00`;
+  function reset() {
+    seconds = 0;
+    milliseconds = 0;
+    setTimeout(function() {
+        timerDisplay.innerHTML = `00 : 00`;
+        timerDisplayTwo.innerHTML = `00 : 00`;
+    }, 3000)
 }
+
 
 //Function for random number
 function getRandomNumber(min, max) {
@@ -192,11 +200,6 @@ function makeGhostAppear() {
 }
 
 
-//TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
-function myTimeout() {
-    setTimeout(makeGhostAppear, randomDelay);
-}
-
 socket.on('player:time', (playertime) => {
     console.log('OTHER PLAYER TIME '+playertime);
     pauseTwo();
@@ -228,7 +231,8 @@ socket.on('player:win', (winningplayer, bothplayers) => {
 
 const gameFunction = () => {
 
-   makeGhostAppear();
+     //Delay for ghost
+     setTimeout(makeGhostAppear, 3000);
 
     // Ghost disappear on click
     ghost.onclick = function () {
