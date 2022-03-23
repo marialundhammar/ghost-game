@@ -41,6 +41,8 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     // emit your time to the other player
     this.broadcast.to(gamesessionid).emit('player:time', playertime);
 
+    console.log('This is online players', onlineplayers);
+
     //check if both players clicked on the ghost
     if (playerClicks.length == 2) {
         //add one to turn
@@ -141,6 +143,31 @@ const handleDisconnect = function () {
     console.log(gamesession.players)
 }
 
+const handleEndgame = function (session, player) {
+    //reset the online players
+    delete onlineplayers[player];
+
+    debug(`Client ${this.id} disconnected :(`);
+
+    const gamesession = gamesessions.find(gamesession => gamesession.players.hasOwnProperty(this.id));
+
+    if (!gamesession) {
+        return;
+    }
+
+    // let everyone connected know that user has disconnected
+    this.broadcast.emit('player:disconnected', gamesession.players[this.id]);
+    console.log("hej från disconnect")
+
+
+    // remove user from list of connected players
+    delete gamesession.players[this.id];
+
+    this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
+
+    console.log(gamesession.players)
+}
+
 
 module.exports = function (socket, _io) {
     debug('a new client has connected', socket.id);
@@ -157,5 +184,5 @@ module.exports = function (socket, _io) {
     // handle player score
     socket.on('player:points', handlePlayerPoints);
 
-    socket.on('player: delete', handleDisconnect);
+    socket.on('player: delete', handleEndgame);
 }

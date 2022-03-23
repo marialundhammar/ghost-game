@@ -54,6 +54,9 @@ const updateUserList = players => {
         gameWrapperEl.classList.remove('hide');
         gameWrapperEl.classList.remove('display-none');
 
+        score1.innerHTML = '0' + ' -';
+        score2.innerHTML = '0';
+
         gameFunction();
     }
     /*     console.log(players);
@@ -287,7 +290,8 @@ playAgain.addEventListener('submit', e => {
 playAgain.addEventListener('reset', e => {
 
     e.preventDefault();
-    socket.emit('player: delete', gamesession)
+    socket.emit('player: delete', gamesession, player)
+    console.log('FROM PLAYER DELETE HIDGSDKJGSJKDFGDJAGJKDGJKADGJKDGAJKDGAJGD', player);
 
     playAgain.classList.add('hide');
     startEl.classList.remove('display-none');
