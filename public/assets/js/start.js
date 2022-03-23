@@ -3,6 +3,7 @@ const startEl = document.querySelector('#start');
 const waitingEl = document.querySelector('#waiting-screen')
 const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
+const playAgain = document.querySelector('#playAgain');
 
 
 let player = null;
@@ -42,31 +43,32 @@ let gridHeight;
 const updateUserList = players => {
     document.querySelector('#online-players').innerHTML =
         Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
-        console.log(players);
-        if (Object.keys(players).length == 2) {
-            console.log("Two players!");
-             
-            //hide waiting view
-            waitingEl.classList.add('display-none');
-            
-             //show game view 
-            gameWrapperEl.classList.remove('hide');
-
-            gameFunction();
-        }
     console.log(players);
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
 
-        //hide start view
-        startEl.classList.add('display-none');
+        //hide waiting view
+        waitingEl.classList.add('display-none');
 
         //show game view 
         gameWrapperEl.classList.remove('hide');
+        gameWrapperEl.classList.remove('display-none');
 
         gameFunction();
-
     }
+    /*     console.log(players);
+        if (Object.keys(players).length == 2) {
+            console.log("Two players!");
+    
+            //hide start view
+            startEl.classList.add('display-none');
+    
+            //show game view 
+            gameWrapperEl.classList.remove('hide');
+    
+            gameFunction();
+    
+        } */
 }
 
 // listen for when we receive an updated list of online users (in this room)
@@ -84,8 +86,9 @@ let currentTurn;
 
 socket.on('player:point', (playerid, playerpoints, turn) => {
     console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "on turn ", turn);
-    currentTurn=turn;
-    playerId=playerid;
+    currentTurn = turn;
+
+    playerId = playerid;
 })
 
 
@@ -96,7 +99,7 @@ playernameForm.addEventListener('submit', e => {
 
     console.log(`User ${player} wants to join`);
 
-    let turn=1;
+    let turn = 1;
 
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
@@ -109,11 +112,11 @@ playernameForm.addEventListener('submit', e => {
             console.log("inside success")
             gamesession = status.gamesession;
 
-             //remove start view
-             startEl.classList.add('display-none');
+            //remove start view
+            startEl.classList.add('display-none');
 
-             //show waiting view
-             waitingEl.classList.remove('hide');
+            //show waiting view
+            waitingEl.classList.remove('hide');
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = "🎮 " + player;
@@ -129,35 +132,43 @@ playernameForm.addEventListener('submit', e => {
 
 //TIMER FUNCTIONS
 function startTimer() {
-  pause();
-  pauseTwo();
-  startTime = Date.now();
+    pause();
+    pauseTwo();
+    startTime = Date.now();
 
-  int = setInterval(function() {
-    let elapsedTime = Date.now() - startTime;
-    timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
-    //timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
-  }, 10)
 
-  intTwo = setInterval(function() {
-    let elapsedTime = Date.now() - startTime;
-    //timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
-    timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
-  }, 10)
+
+    int = setInterval(function () {
+        let elapsedTime = Date.now() - startTime;
+        timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+        //timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
+    }, 10)
+
+    intTwo = setInterval(function () {
+        let elapsedTime = Date.now() - startTime;
+        //timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+        timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
+    }, 10)
+
+
+
 }
+
+
 function pause() {
-  clearInterval(int);
+    clearInterval(int);
+
 }
 
 function pauseTwo() {
     clearInterval(intTwo);
-  }
+}
 
 function reset() {
-  seconds = 0;
-  milliseconds = 0;
-  timerDisplay.innerHTML = `00 : 00`;
-  timerDisplayTwo.innerHTML = `00 : 00`;
+    seconds = 0;
+    milliseconds = 0;
+    timerDisplay.innerHTML = `00 : 00`;
+    timerDisplayTwo.innerHTML = `00 : 00`;
 }
 
 //Function for random number
@@ -168,8 +179,8 @@ function getRandomNumber(min, max) {
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
 
-   gridWidth = grid.clientWidth - 50;
-   gridHeight = grid.clientHeight - 50;
+    gridWidth = grid.clientWidth - 50;
+    gridHeight = grid.clientHeight - 50;
 
     //randomize position
     randomTop = getRandomNumber(0, gridHeight);
@@ -187,7 +198,7 @@ function makeGhostAppear() {
 
     //start timer
     startTimer();
-  
+
     gamestatus = false;
 }
 
@@ -198,9 +209,9 @@ function myTimeout() {
 }
 
 socket.on('player:time', (playertime) => {
-    console.log('OTHER PLAYER TIME '+playertime);
+    console.log('OTHER PLAYER TIME ' + playertime);
     pauseTwo();
-    timerDisplayTwo.innerHTML=playertime;
+    timerDisplayTwo.innerHTML = playertime;
 
 })
 
@@ -213,33 +224,94 @@ socket.on('player:win', (winningplayer, bothplayers) => {
 
     const myPlayer = bothplayers.find(obj => obj.id === playerId);
     const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
-    score1.innerHTML=myPlayer.points+' -';
-    score2.innerHTML=otherPlayer.points;
+    score1.innerHTML = myPlayer.points + ' -';
+    score2.innerHTML = otherPlayer.points;
 
-    console.log('This is the player id: '+playerId)
-    if (currentTurn<3) {
+    console.log('This is the player id: ' + playerId)
+
+
+    if (currentTurn < 2) {
         reset();
         gameFunction();
+
+
     } else {
         alert('game over')
+        playAgain.classList.remove('hide');
+        gameWrapperEl.classList.add('display-none');
+
+
     }
 })
 
 
+playAgain.addEventListener('submit', e => {
+
+    e.preventDefault();
+    playAgain.classList.add('hide');
+    //show waiting view
+    waitingEl.classList.remove('display-none');
+
+    player = playernameForm.playername.value;
+
+    console.log(`User ${player} wants to join`);
+
+    let turn = 1;
+
+
+    // emit `user:joined` event and when we get acknowledgement, THEN show the game
+    socket.emit('player:joined', player, turn, (status) => {
+        // we've received acknowledgement from the server
+        console.log("Server acknowledged that player joined", status);
+
+
+        if (status.success) {
+            console.log("inside success")
+            gamesession = status.gamesession;
+
+            //show waiting view
+            //waitingEl.classList.remove('hide');
+
+            //changing player-name-title to username 
+            document.querySelector('#player-name-title').innerText = "🎮 " + player;
+            score1.innerHTML = 0 + " - ";
+            score2.innerHTML = 0;
+
+            // update list of users in room
+            updateUserList(status.gamesession.players);
+
+        }
+    });
+});
+
+playAgain.addEventListener('reset', e => {
+
+    e.preventDefault();
+    socket.emit('player: delete', gamesession)
+
+    playAgain.classList.add('hide');
+    startEl.classList.remove('display-none');
+
+    console.log(gamesession);
+});
+
+
+
+
 const gameFunction = () => {
 
-   makeGhostAppear();
+    makeGhostAppear();
 
     // Ghost disappear on click
     ghost.onclick = function () {
         ghost.classList.add('hide');
-        
+
         //pause interval and save the time in timeTaken
         pause();
 
-        let timeTaken = timerDisplay.innerHTML 
+        let timeTaken = timerDisplay.innerHTML
         console.log("This is the time taken:", timeTaken);
-  
+
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
@@ -252,11 +324,11 @@ const gameFunction = () => {
 // function update(e){
 //     var x = e.clientX || e.touches[0].clientX
 //     var y = e.clientY || e.touches[0].clientY
-  
+
 //     document.documentElement.style.setProperty('--cursorX', x + 'px')
 //     document.documentElement.style.setProperty('--cursorY', y + 'px')
 //   }
-  
+
 //   document.addEventListener('mousemove',update)
 //   document.addEventListener('touchmove',update)
-  
+
