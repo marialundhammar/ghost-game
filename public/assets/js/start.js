@@ -54,6 +54,9 @@ const updateUserList = players => {
         Object.values(players).map(player => `<li><span class="text-success">●</span> ${player.name}</li>`).join("");
     console.log(players);
     if (Object.keys(players).length == 2) {
+
+        audio.play();
+        
         console.log("Two players!");
         bothplayers=players;
         //hide waiting view
