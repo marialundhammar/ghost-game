@@ -26,7 +26,7 @@ body {
 #countdown-wrapper,
 #score-board,
 #play-again-wrapper,
-#congrats-wrapper {
+#winner-wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -46,14 +46,18 @@ body {
 }
 
 
-#countdown {
+#countdown, 
+#winner {
     font-size: 90px;
     color: black;
 }
 
-#countdown-wrapper {
+#countdown-wrapper,
+#winner-wrapper {
     height: 80vh;
 }
+
+
 
 #thegame{
 	background-color:rgb(94, 72, 125); 
@@ -96,10 +100,10 @@ body {
 }
 
 
-
 #game-title, 
 #start-title,
-#play-again-title {
+#play-again-title,
+#winner {
 	font-size: 4rem;
 	padding: 1em;
 	color: white;
@@ -127,7 +131,8 @@ body {
 }
 
 
-#play-again-wrapper {
+#play-again-wrapper,
+#winner-wrapper {
 	height: 100vh;
 	width: 100vw;
 	font-family: 'Fredoka One', cursive;

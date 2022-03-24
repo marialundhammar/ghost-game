@@ -19,8 +19,8 @@ const countdownEl = document.querySelector('#countdown');
 const countdown = ['Ready..', 'Set..', 'GHOST!'];
 
 //Congrats 
-const congratsEl = document.querySelector('#congrats');
-const congratsWrapper = document.querySelector("#congrats-wrapper")
+const winnerEl = document.querySelector('#winner');
+const winnerWrapper = document.querySelector("#winner-wrapper")
 
 
 //GAME VARIABLES
@@ -46,6 +46,7 @@ let intTwo;
 //get grid width and height
 let gridWidth;
 let gridHeight;
+let bothplayers;
 
 // update user list
 const updateUserList = players => {
@@ -54,7 +55,7 @@ const updateUserList = players => {
     console.log(players);
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
-
+        bothplayers=players;
         //hide waiting view
         waitingEl.classList.add('display-none');
 
@@ -240,18 +241,22 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         countdownEl.classList.remove("display-none");
         gameFunction();
     } else {
+
+        gameWrapperEl.classList.add('display-none');
+        winnerWrapper.classList.remove("display-none");
+
         if(currentPlayer.points > otherPlayer.points) {
         console.log("Player who won: ", currentPlayer.name);
-        congratsEl.innerHTML = `<h1>Congratulations ${currentPlayer.name}!🥳</h1>`;
+        winnerEl.innerHTML = `Congratulations ${currentPlayer.name}!🥳`;
+        
        } else if (currentPlayer.points < otherPlayer.points) {
         console.log("Player who won:", otherPlayer.name);
-        congratsEl.innerHTML = `<h1>Congratulations ${otherPlayer.name}!🥳</h1>`;
+        winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
        } 
 
         setTimeout(function() {
             playAgain.classList.remove('display-none');
-            gameWrapperEl.classList.add('display-none');
-            congratsWrapper.classList.add('display-none');
+            winnerWrapper.classList.add('display-none');
         }, 3000);
         
         console.log(gamesession.turn)
