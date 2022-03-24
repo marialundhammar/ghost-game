@@ -41,8 +41,14 @@ body {
 	width: 30%;
 }
 
+
 #countdown {
-	font-size: 90px;
+    font-size: 90px;
+    color: black;
+}
+
+#countdown-wrapper {
+    height: 80vh;
 }
 
 #thegame{

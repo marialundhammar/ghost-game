@@ -16,7 +16,8 @@ audio = new Audio('/assets/songs/gummibar.mp3');
 
 //Countdown
 const countdownEl = document.querySelector('#countdown');
-const countdownWrapper = document.querySelector('#countdown-wrapper');
+const countdown = ['Ready..', 'Set..', 'GHOST!'];
+
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -50,17 +51,33 @@ const updateUserList = players => {
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
 
-
         //hide waiting view
         waitingEl.classList.add('display-none');
 
         //show game view 
         gameWrapperEl.classList.remove('display-none');
 
+        //Countdown before game starts
+        var interval = 1000; // countdown delay time
+        countdown.forEach(function (el, index) {
+            setTimeout(function () {
+                countdownEl.innerHTML = el;
+                console.log(el);
+                console.log("Inner html:", countdownEl.innerHTML);
+            }, index * interval);
+        });
+
+        //Hide countdown before game starts
+        setTimeout(function () {
+            countdownEl.innerHTML = "";
+            countdownEl.classList.add("display-none");
+        }, 3000);
+
+
         score1.innerHTML = "0 " + " - ";
         score2.innerHTML = "0 ";
 
-
+        //Start game
         gameFunction();
     }
 }
@@ -151,10 +168,12 @@ function pauseTwo() {
 function reset() {
     seconds = 0;
     milliseconds = 0;
-    timerDisplay.innerHTML = `00 : 00`;
-    timerDisplayTwo.innerHTML = `00 : 00`;
-
+    setTimeout(function () {
+        timerDisplay.innerHTML = `00 : 00`;
+        timerDisplayTwo.innerHTML = `00 : 00`;
+    }, 3000)
 }
+
 
 //Function for random number
 function getRandomNumber(min, max) {
@@ -187,11 +206,6 @@ function makeGhostAppear() {
     gamestatus = false;
 }
 
-
-//TIME OUT TO MAKE GHOST APPEAR AFTER FIVE SECONDS
-function myTimeout() {
-    setTimeout(makeGhostAppear, randomDelay);
-}
 
 socket.on('player:time', (playertime) => {
     console.log('OTHER PLAYER TIME ' + playertime);
@@ -278,7 +292,8 @@ yesBtn.addEventListener('click', e => {
 
 const gameFunction = () => {
 
-    makeGhostAppear();
+    //Delay for ghost
+    setTimeout(makeGhostAppear, 3000);
 
     // Ghost disappear on click
     ghost.onclick = function () {
