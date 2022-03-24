@@ -126,7 +126,7 @@ const handleDisconnect = function () {
     }
 
     // let everyone connected know that user has disconnected
-    this.broadcast.emit('player:disconnected', gamesession.players[this.id]);
+    this.broadcast.to(gamesession.id).emit('player:disconnected', gamesession.players[this.id]);
     console.log("hej från disconnect")
     gamesession.turn = 0;
     gamesession.points = 0;
