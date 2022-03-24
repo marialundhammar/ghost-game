@@ -306,7 +306,16 @@ yesBtn.addEventListener('click', e => {
 
 });
 
+socket.on('player:disconnected', disconnectedUser => {
+    console.log('This player disconnected', disconnectedUser)
+    socket.emit('player:kickout', this.id);
 
+    playAgain.classList.add('display-none');
+    startEl.classList.remove('display-none');
+    gameWrapperEl.classList.add('display-none');
+
+    playernameForm.reset();
+})
 
 
 const gameFunction = () => {
