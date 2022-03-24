@@ -257,7 +257,7 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         setTimeout(function() {
             playAgain.classList.remove('display-none');
             winnerWrapper.classList.add('display-none');
-        }, 3000);
+        }, 4000);
         
         console.log(gamesession.turn)
         gamesession.turn = 2;
