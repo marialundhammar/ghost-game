@@ -25,9 +25,10 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     console.log(`This is my time! ${playertime} `);
     console.log(`This is the session! ${gamesessionid} `);
 
-    const gamesession = gamesessions.find(gamesession => gamesession.id === gamesession.id);
+    const gamesession = gamesessions.find(gamesession => gamesession.id === gamesessionid);
     console.log(gamesession);
     let player = gamesession.players[this.id];
+
 
     //Push the players id, what turn it is and 
     // the time it took for tyhe player to click on the ghost
@@ -41,8 +42,9 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     this.broadcast.to(gamesessionid).emit('player:time', playertime);
 
     //check if both players clicked on the ghost
-    if (gamesession.clicks.length >= 2) {
+    if (gamesession.clicks.length == 2) {
         console.log("somebody won a turn")
+        console.log(gamesession)
         //add one to turn
         gamesession.turn++
 
@@ -82,6 +84,7 @@ const handleUserJoined = function (playername, turn, callback) {
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
+
         }
     })
 
@@ -94,6 +97,7 @@ const handleUserJoined = function (playername, turn, callback) {
     // Find the gamesession and add the player to it
     const gamesession = gamesessions.find(obj => obj.id === joinRoomId);
     gamesession.players = { ...gamesession.players, [this.id]: { id: this.id, name: playername, points: 0, time: 0 } }
+    console.log(gamesession.players)
 
     // Create or join an existing room with the joinRoomId.
     this.join(joinRoomId);

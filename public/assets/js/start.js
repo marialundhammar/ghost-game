@@ -5,6 +5,9 @@ const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
 const playAgain = document.querySelector('#playAgain');
 
+const yesBtn = document.querySelector('#yes-btn');
+const noBtn = document.querySelector('#no-btn');
+
 
 let player = null;
 let gamesession = null;
@@ -47,11 +50,16 @@ const updateUserList = players => {
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
 
+
         //hide waiting view
         waitingEl.classList.add('display-none');
 
         //show game view 
-        gameWrapperEl.classList.remove('hide');
+        gameWrapperEl.classList.remove('display-none');
+
+        score1.innerHTML = "0 " + " - ";
+        score2.innerHTML = "0 ";
+
 
         gameFunction();
     }
@@ -64,8 +72,6 @@ socket.on('players:list', players => {
 
 let gamestatus;
 let playerRound = [];
-
-
 let currentTurn;
 
 
@@ -102,7 +108,7 @@ playernameForm.addEventListener('submit', e => {
             startEl.classList.add('display-none');
 
             //show waiting view
-            waitingEl.classList.remove('hide');
+            waitingEl.classList.remove('display-none');
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = "🎮 " + player;
@@ -147,7 +153,7 @@ function reset() {
     milliseconds = 0;
     timerDisplay.innerHTML = `00 : 00`;
     timerDisplayTwo.innerHTML = `00 : 00`;
-    turn = 0;
+
 }
 
 //Function for random number
@@ -173,7 +179,7 @@ function makeGhostAppear() {
     console.log(ghost);
 
     //show ghost
-    ghost.classList.remove('hide');
+    ghost.classList.remove('display-none');
 
     //start timer
     startTimer();
@@ -213,7 +219,7 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         reset();
         gameFunction();
     } else {
-        playAgain.classList.remove('hide');
+        playAgain.classList.remove('display-none');
         gameWrapperEl.classList.add('display-none');
         console.log(gamesession.turn)
         gamesession.turn = 2;
@@ -222,16 +228,48 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
 
 
 
-playAgain.addEventListener('submit', e => {
-
+noBtn.addEventListener('click', e => {
     e.preventDefault();
 
     socket.emit('player: delete', gamesession);
-    playAgain.classList.add('hide');
+    playAgain.classList.add('display-none');
     startEl.classList.remove('display-none');
 
     playernameForm.reset();
 
+
+});
+
+yesBtn.addEventListener('click', e => {
+    e.preventDefault();
+
+    player = playernameForm.playername.value;
+    console.log(player);
+
+    // emit `user:joined` event and when we get acknowledgement, THEN show the game
+    socket.emit('player:joined', player, currentTurn, (status) => {
+        // we've received acknowledgement from the server
+        console.log("Server acknowledged that player joined", status);
+
+
+        if (status.success) {
+            console.log("inside success")
+            gamesession = status.gamesession;
+
+            //remove start view
+            startEl.classList.add('display-none');
+
+            //show waiting view
+            waitingEl.classList.remove('display-none');
+
+            //changing player-name-title to username 
+            document.querySelector('#player-name-title').innerText = "🎮 " + player;
+
+            // update list of users in room
+            updateUserList(status.gamesession.players);
+
+        }
+    });
 
 });
 
@@ -244,7 +282,7 @@ const gameFunction = () => {
 
     // Ghost disappear on click
     ghost.onclick = function () {
-        ghost.classList.add('hide');
+        ghost.classList.add('display-none');
 
         //pause interval and save the time in timeTaken
         pause();
