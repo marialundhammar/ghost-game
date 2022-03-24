@@ -42,7 +42,7 @@
         </div>
 
         <!-- Waiting screen -->
-        <div id="waiting-screen" class="hide">
+        <div id="waiting-screen" class="display-none">
             <div id="waiting-wrapper">
                 <h1>Waiting for opponent...</h1>
                 <img id="ghost-animation" src="/assets/imgs/ghost.gif" alt="Loading ghost">
@@ -50,11 +50,11 @@
         </div>
 
 
-        <div id="game-board" class="hide">
+        <div id="game-board" class="display-none">
             <div id="game-wrapper">
                 <h2 id="game-title">Bust a ghost</h2>
                 <div id="thegame">
-                    <div id="ghost" class="hide">👻</div>
+                    <div id="ghost" class="display-none">👻</div>
                     <div id="countdown-wrapper">
                         <div id="countdown"></div>
                     </div>
@@ -72,21 +72,31 @@
                         <span id="player1">0 - </span>
                         <span id="player2">0</span>
                     </h2>
-                <h2 id="test"></h2>
-                <div>
-                    <h2 id="player-name-title">Players</h2>
-                    <ul id="online-players"></ul>
-                    <h2>Your time:</h2>
-                    <h2 id="timer-display">00 : 000</h2>
-                    <br><br>
-                    <h2>Opponent's time:</h2>
-                    <h2 id="timer-display-two">00 : 000</h2>
-                </div>
+                    <h2 id="test"></h2>
+                    <div>
+                        <h2 id="player-name-title">Players</h2>
+                        <ul id="online-players"></ul>
+                        <h2>Your time:</h2>
+                        <h2 id="timer-display">00 : 000</h2>
+                        <br><br>
+                        <h2>Opponent's time:</h2>
+                        <h2 id="timer-display-two">00 : 000</h2>
+                    </div>
                 </div>
                 <div></div>
             </div>
 
         </div>
+
+
+        <form id="playAgain" class="display-none">
+
+            Play again?
+
+            <button type="submit" id="no-btn" class="btn btn-primary">NO</button>
+            <button type="submit" id="yes-btn" class="btn btn-primary">Yes</button>
+
+        </form>
 
     </div>
 
