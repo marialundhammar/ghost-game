@@ -156,4 +156,6 @@ module.exports = function (socket, _io) {
 
     // handle player score
     socket.on('player:points', handlePlayerPoints);
+
+    socket.on('player:kickout', handleDisconnect);
 }
