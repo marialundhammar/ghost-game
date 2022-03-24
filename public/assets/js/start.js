@@ -46,7 +46,7 @@ let gridHeight;
 // update user list
 const updateUserList = players => {
     document.querySelector('#online-players').innerHTML =
-        Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player.name}</li>`).join("");
+        Object.values(players).map(player => `<li><span class="text-success">●</span> ${player.name}</li>`).join("");
     console.log(players);
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
@@ -73,6 +73,8 @@ const updateUserList = players => {
             countdownEl.classList.add("display-none");
         }, 3000);
 
+        timerDisplay.innerHTML = `00 : 00`;
+        timerDisplayTwo.innerHTML = `00 : 00`;
 
         score1.innerHTML = "0 " + " - ";
         score2.innerHTML = "0 ";
@@ -231,10 +233,20 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     console.log('This is the player id: ' + playerId)
     if (gamesession.turn < 2) {
         reset();
+        countdownEl.classList.remove("display-none");
         gameFunction();
     } else {
-        playAgain.classList.remove('display-none');
-        gameWrapperEl.classList.add('display-none');
+        if (currentPlayer.points > otherPlayer.points) {
+            console.log("You won! This is your points:", otherPlayer.points);
+        } else if (currentPlayer.points < otherPlayer.points) {
+            console.log("You lost. This is your points:", currentPlayer.points);
+        }
+
+        setTimeout(function() {
+            playAgain.classList.remove('display-none');
+            gameWrapperEl.classList.add('display-none');
+        }, 3000);
+        
         console.log(gamesession.turn)
         gamesession.turn = 2;
     }
@@ -311,17 +323,4 @@ const gameFunction = () => {
     }
 
 }
-
-
-//Cursor function
-// function update(e){
-//     var x = e.clientX || e.touches[0].clientX
-//     var y = e.clientY || e.touches[0].clientY
-
-//     document.documentElement.style.setProperty('--cursorX', x + 'px')
-//     document.documentElement.style.setProperty('--cursorY', y + 'px')
-//   }
-
-//   document.addEventListener('mousemove',update)
-//   document.addEventListener('touchmove',update)
 
