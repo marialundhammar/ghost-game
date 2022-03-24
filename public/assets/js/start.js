@@ -18,6 +18,10 @@ audio = new Audio('/assets/songs/gummibar.mp3');
 const countdownEl = document.querySelector('#countdown');
 const countdown = ['Ready..', 'Set..', 'GHOST!'];
 
+//Congrats 
+const congratsEl = document.querySelector('#congrats');
+const congratsWrapper = document.querySelector("#congrats-wrapper")
+
 
 //GAME VARIABLES
 let start = new Date().getTime();
@@ -236,15 +240,18 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         countdownEl.classList.remove("display-none");
         gameFunction();
     } else {
-        if (currentPlayer.points > otherPlayer.points) {
-            console.log("You won! This is your points:", otherPlayer.points);
-        } else if (currentPlayer.points < otherPlayer.points) {
-            console.log("You lost. This is your points:", currentPlayer.points);
-        }
+        if(currentPlayer.points > otherPlayer.points) {
+        console.log("Player who won: ", currentPlayer.name);
+        congratsEl.innerHTML = `<h1>Congratulations ${currentPlayer.name}!🥳</h1>`;
+       } else if (currentPlayer.points < otherPlayer.points) {
+        console.log("Player who won:", otherPlayer.name);
+        congratsEl.innerHTML = `<h1>Congratulations ${otherPlayer.name}!🥳</h1>`;
+       } 
 
         setTimeout(function() {
             playAgain.classList.remove('display-none');
             gameWrapperEl.classList.add('display-none');
+            congratsWrapper.classList.add('display-none');
         }, 3000);
         
         console.log(gamesession.turn)
