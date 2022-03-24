@@ -25,7 +25,8 @@ body {
 #game-wrapper,
 #countdown-wrapper,
 #score-board,
-#play-again-wrapper {
+#play-again-wrapper,
+#congrats-wrapper {
 	display: flex;
 	justify-content: center;
 	align-items: center;
