@@ -236,7 +236,7 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     score2.innerHTML = otherPlayer.points;
 
     console.log('This is the player id: ' + playerId)
-    if (gamesession.turn < 2) {
+    if (gamesession.turn < 10) {
         reset();
         countdownEl.classList.remove("display-none");
         gameFunction();
@@ -252,7 +252,9 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
        } else if (currentPlayer.points < otherPlayer.points) {
         console.log("Player who won:", otherPlayer.name);
         winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
-       } 
+       } else if (currentPlayer.points == otherPlayer.points) {
+        winnerEl.innerHTML = `OMG! It's a tie!🤯`;
+       }
 
         setTimeout(function() {
             playAgain.classList.remove('display-none');
@@ -260,7 +262,7 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         }, 4000);
         
         console.log(gamesession.turn)
-        gamesession.turn = 2;
+        //gamesession.turn = 2;
     }
 })
 
@@ -311,16 +313,6 @@ yesBtn.addEventListener('click', e => {
 
 });
 
-socket.on('player:disconnected', disconnectedUser => {
-    console.log('This player disconnected', disconnectedUser)
-    socket.emit('player:kickout', this.id);
-
-    playAgain.classList.add('display-none');
-    startEl.classList.remove('display-none');
-    gameWrapperEl.classList.add('display-none');
-
-    playernameForm.reset();
-})
 
 
 const gameFunction = () => {

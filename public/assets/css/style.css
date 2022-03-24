@@ -89,6 +89,7 @@ body {
 	position: absolute;
 	font-size: 40px;
 	background: transparent;
+	cursor: pointer;
 }
 
 #game-board{
