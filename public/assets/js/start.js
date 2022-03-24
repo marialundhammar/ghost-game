@@ -3,6 +3,7 @@ const startEl = document.querySelector('#start');
 const waitingEl = document.querySelector('#waiting-screen')
 const gameWrapperEl = document.querySelector('#game-board');
 const playernameForm = document.querySelector('#playername-form');
+const playAgain = document.querySelector('#playAgain');
 
 
 let player = null;
@@ -41,31 +42,18 @@ let gridHeight;
 // update user list
 const updateUserList = players => {
     document.querySelector('#online-players').innerHTML =
-        Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player}</li>`).join("");
-        console.log(players);
-        if (Object.keys(players).length == 2) {
-            console.log("Two players!");
-             
-            //hide waiting view
-            waitingEl.classList.add('display-none');
-            
-             //show game view 
-            gameWrapperEl.classList.remove('hide');
-
-            gameFunction();
-        }
+        Object.values(players).map(player => `<li><span class="fa-solid fa-user-astronaut"></span> ${player.name}</li>`).join("");
     console.log(players);
     if (Object.keys(players).length == 2) {
         console.log("Two players!");
 
-        //hide start view
-        startEl.classList.add('display-none');
+        //hide waiting view
+        waitingEl.classList.add('display-none');
 
         //show game view 
         gameWrapperEl.classList.remove('hide');
 
         gameFunction();
-
     }
 }
 
@@ -78,14 +66,15 @@ let gamestatus;
 let playerRound = [];
 
 
-let playerId;
 let currentTurn;
 
 
-socket.on('player:point', (playerid, playerpoints, turn) => {
-    console.log('The player who klicked: ', playerid, "with the time ", playerpoints, "on turn ", turn);
-    currentTurn=turn;
-    playerId=playerid;
+socket.on('player:point', (playerid, gamesession) => {
+    const turn = gamesession.turn;
+    const { name, time } = gamesession.players[playerid];
+
+    console.log('The player who clicked: ', name, "with the time ", time, "on turn ", turn);
+    currentTurn = turn;
 })
 
 
@@ -96,11 +85,11 @@ playernameForm.addEventListener('submit', e => {
 
     console.log(`User ${player} wants to join`);
 
-    let turn=1;
+
 
 
     // emit `user:joined` event and when we get acknowledgement, THEN show the game
-    socket.emit('player:joined', player, turn, (status) => {
+    socket.emit('player:joined', player, currentTurn, (status) => {
         // we've received acknowledgement from the server
         console.log("Server acknowledged that player joined", status);
 
@@ -109,11 +98,11 @@ playernameForm.addEventListener('submit', e => {
             console.log("inside success")
             gamesession = status.gamesession;
 
-             //remove start view
-             startEl.classList.add('display-none');
+            //remove start view
+            startEl.classList.add('display-none');
 
-             //show waiting view
-             waitingEl.classList.remove('hide');
+            //show waiting view
+            waitingEl.classList.remove('hide');
 
             //changing player-name-title to username 
             document.querySelector('#player-name-title').innerText = "🎮 " + player;
@@ -129,35 +118,36 @@ playernameForm.addEventListener('submit', e => {
 
 //TIMER FUNCTIONS
 function startTimer() {
-  pause();
-  pauseTwo();
-  startTime = Date.now();
+    pause();
+    pauseTwo();
+    startTime = Date.now();
 
-  int = setInterval(function() {
-    let elapsedTime = Date.now() - startTime;
-    timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
-    //timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
-  }, 10)
+    int = setInterval(function () {
+        let elapsedTime = Date.now() - startTime;
+        timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+        //timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
+    }, 10)
 
-  intTwo = setInterval(function() {
-    let elapsedTime = Date.now() - startTime;
-    //timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
-    timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
-  }, 10)
+    intTwo = setInterval(function () {
+        let elapsedTime = Date.now() - startTime;
+        //timerDisplay.innerHTML = (elapsedTime / 1000).toFixed(3);
+        timerDisplayTwo.innerHTML = (elapsedTime / 1000).toFixed(3);
+    }, 10)
 }
 function pause() {
-  clearInterval(int);
+    clearInterval(int);
 }
 
 function pauseTwo() {
     clearInterval(intTwo);
-  }
+}
 
 function reset() {
-  seconds = 0;
-  milliseconds = 0;
-  timerDisplay.innerHTML = `00 : 00`;
-  timerDisplayTwo.innerHTML = `00 : 00`;
+    seconds = 0;
+    milliseconds = 0;
+    timerDisplay.innerHTML = `00 : 00`;
+    timerDisplayTwo.innerHTML = `00 : 00`;
+    turn = 0;
 }
 
 //Function for random number
@@ -168,8 +158,8 @@ function getRandomNumber(min, max) {
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
 
-   gridWidth = grid.clientWidth - 50;
-   gridHeight = grid.clientHeight - 50;
+    gridWidth = grid.clientWidth - 50;
+    gridHeight = grid.clientHeight - 50;
 
     //randomize position
     randomTop = getRandomNumber(0, gridHeight);
@@ -187,7 +177,7 @@ function makeGhostAppear() {
 
     //start timer
     startTimer();
-  
+
     gamestatus = false;
 }
 
@@ -198,48 +188,70 @@ function myTimeout() {
 }
 
 socket.on('player:time', (playertime) => {
-    console.log('OTHER PLAYER TIME '+playertime);
+    console.log('OTHER PLAYER TIME ' + playertime);
     pauseTwo();
-    timerDisplayTwo.innerHTML=playertime;
+    timerDisplayTwo.innerHTML = playertime;
 
 })
 
-socket.on('player:win', (winningplayer, bothplayers) => {
-    console.log(winningplayer.name + " won" + " with the time " + winningplayer.time + " current score " + winningplayer.points);
+socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) => {
 
+    const players = gamesession.players;
+    const currentPlayer = players[playerId];
+    const winningPlayer = players[winningPlayerId];
+    const otherPlayer = players[otherPlayerId];
 
-    //console.log('THIS IS THE LOOSER', loosingplayer)
-    console.log('THIS IS BOTHPLAYERS', bothplayers)
+    console.log(winningPlayer.name + " won" + " with the time " + winningPlayer.time + " current score " + winningPlayer.points);
 
-    const myPlayer = bothplayers.find(obj => obj.id === playerId);
-    const otherPlayer = bothplayers.find(obj => obj.id !== playerId);
-    score1.innerHTML=myPlayer.points+' -';
-    score2.innerHTML=otherPlayer.points;
+    console.log('THIS IS BOTHPLAYERS', players)
 
-    console.log('This is the player id: '+playerId)
-    if (currentTurn<3) {
+    score1.innerHTML = currentPlayer.points + ' -';
+    score2.innerHTML = otherPlayer.points;
+
+    console.log('This is the player id: ' + playerId)
+    if (gamesession.turn < 2) {
         reset();
         gameFunction();
     } else {
-        alert('game over')
+        playAgain.classList.remove('hide');
+        gameWrapperEl.classList.add('display-none');
+        console.log(gamesession.turn)
+        gamesession.turn = 2;
     }
 })
 
 
+
+playAgain.addEventListener('submit', e => {
+
+    e.preventDefault();
+
+    socket.emit('player: delete', gamesession);
+    playAgain.classList.add('hide');
+    startEl.classList.remove('display-none');
+
+    playernameForm.reset();
+
+
+});
+
+
+
+
 const gameFunction = () => {
 
-   makeGhostAppear();
+    makeGhostAppear();
 
     // Ghost disappear on click
     ghost.onclick = function () {
         ghost.classList.add('hide');
-        
+
         //pause interval and save the time in timeTaken
         pause();
 
-        let timeTaken = timerDisplay.innerHTML 
+        let timeTaken = timerDisplay.innerHTML
         console.log("This is the time taken:", timeTaken);
-  
+
 
         socket.emit('player:points', timeTaken, gamesession.id);
 
@@ -252,11 +264,11 @@ const gameFunction = () => {
 // function update(e){
 //     var x = e.clientX || e.touches[0].clientX
 //     var y = e.clientY || e.touches[0].clientY
-  
+
 //     document.documentElement.style.setProperty('--cursorX', x + 'px')
 //     document.documentElement.style.setProperty('--cursorY', y + 'px')
 //   }
-  
+
 //   document.addEventListener('mousemove',update)
 //   document.addEventListener('touchmove',update)
-  
+

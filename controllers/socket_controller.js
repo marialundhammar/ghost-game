@@ -17,68 +17,62 @@ function makeid(length) {
 }
 
 // Create an empty array of gamesessions that will be populated as players join.
-const gamesessions = [];
-
 let io = null;
-let turns;
-let playerClicks = [];
-let onlineplayers=[];
+const gamesessions = [];
 
 //Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
-    debug(`This is my time! ${playertime} `);
-    debug(`This is the session! ${gamesessionid} `);
+    console.log(`This is my time! ${playertime} `);
+    console.log(`This is the session! ${gamesessionid} `);
 
-    //Save the current players id
-    const id = this.id;
+    const gamesession = gamesessions.find(gamesession => gamesession.id === gamesession.id);
+    console.log(gamesession);
+    let player = gamesession.players[this.id];
 
     //Push the players id, what turn it is and 
     // the time it took for tyhe player to click on the ghost
-    playerClicks.push({ time: playertime, id: id, turn: turns });
-    this.emit('player:point', this.id, playertime, turns);
-    console.log('playerClicks ',playerClicks);
+
+    player = { ...player, time: playertime }
+    gamesession.clicks.push({ ...player, id: this.id });
+
+    this.emit('player:point', this.id, gamesession);
 
     // emit your time to the other player
-	this.broadcast.to(gamesessionid).emit('player:time', playertime);
+    this.broadcast.to(gamesessionid).emit('player:time', playertime);
 
     //check if both players clicked on the ghost
-    if (playerClicks.length == 2) {
+    if (gamesession.clicks.length >= 2) {
+        console.log("somebody won a turn")
         //add one to turn
-        turns++
-        
+        gamesession.turn++
+
+
         //check wich one of the players who are on index 0 (the winner)
-        const winningplayer = onlineplayers.find(obj => obj.id === playerClicks[0].id);
+        const winningPlayerId = gamesession.clicks[0].id;
+        const currentId = this.id;
+        const otherPlayerId = Object.values(gamesession.players).find(obj => obj.id !== this.id).id;
+        console.log(otherPlayerId)
+        console.log(currentId)
+        console.log(gamesession);
+
 
         //add one point and the time
-        winningplayer['points']++;
-        winningplayer['time']=playertime;
+        gamesession.players[winningPlayerId].points++
+        //
 
         // emit the winner and the players
-        io.to(gamesessionid).emit('player:win', winningplayer, onlineplayers);
+        io.to(gamesessionid).emit('player:win', this.id, winningPlayerId, otherPlayerId, gamesession);
 
         //reset playerclicks
-        playerClicks = [];
+        gamesession.clicks = [];
+
+        console.log(gamesession);
     }
 }
 
 //Handle the player when they join the game
 const handleUserJoined = function (playername, turn, callback) {
-    // associate socket id with playername
-    playername[this.id] = playername;
-
-    // Declare a room id that the player should join.
     let joinRoomId;
-
-    // If onlineplayers are less than two, add the new player
-    if (onlineplayers.length<2) {
-        onlineplayers.push({id: this.id, name: playername, points: 0, time: 0}); 
-    }
-
-    //save the current turn
-    turns=turn;
-
-    debug(`Player ${playername} with socket id ${this.id} joined`);
-
     // Loop through gamesessions to find an empty room
     gamesessions.forEach((gamesession) => {
         // Get the count of players in the room
@@ -94,12 +88,12 @@ const handleUserJoined = function (playername, turn, callback) {
     // If no empty room found, create a new one and add to gamesession array.
     if (!joinRoomId) {
         joinRoomId = makeid(5);
-        gamesessions.push({ id: joinRoomId, players: {} });
+        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {} });
     }
 
     // Find the gamesession and add the player to it
     const gamesession = gamesessions.find(obj => obj.id === joinRoomId);
-    gamesession.players = { ...gamesession.players, [this.id]: playername }
+    gamesession.players = { ...gamesession.players, [this.id]: { id: this.id, name: playername, points: 0, time: 0 } }
 
     // Create or join an existing room with the joinRoomId.
     this.join(joinRoomId);
@@ -117,7 +111,7 @@ const handleUserJoined = function (playername, turn, callback) {
 
 const handleDisconnect = function () {
     //reset the online players
-    onlineplayers=[];
+    // onlineplayers = [];
 
     debug(`Client ${this.id} disconnected :(`);
 
@@ -130,11 +124,14 @@ const handleDisconnect = function () {
     // let everyone connected know that user has disconnected
     this.broadcast.emit('player:disconnected', gamesession.players[this.id]);
     console.log("hej från disconnect")
+    gamesession.turn = 0;
+    gamesession.points = 0;
+
 
 
     // remove user from list of connected players
     delete gamesession.players[this.id];
-
+    console.log(gamesession)
     this.broadcast.to(gamesession.id).emit('players:list', gamesession.players);
 }
 
@@ -150,6 +147,8 @@ module.exports = function (socket, _io) {
 
     // handle player joined
     socket.on('player:joined', handleUserJoined);
+
+    socket.on('player: delete', handleDisconnect);
 
     // handle player score
     socket.on('player:points', handlePlayerPoints);
