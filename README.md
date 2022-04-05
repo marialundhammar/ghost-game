@@ -1,4 +1,4 @@
-# virus-game
+# Bust the ghost game
 
 A simple two-player-game built with <b>node.js</b>, <b>socket.io</b> and <b>Express</b> 
 
