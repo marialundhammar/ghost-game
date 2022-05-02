@@ -20,6 +20,10 @@ function makeid(length) {
 let io = null;
 const gamesessions = [];
 
+let randomTop;
+let randomLeft;
+
+
 //Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
     console.log(`This is my time! ${playertime} `);
@@ -32,7 +36,6 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
     //Push the players id, what turn it is and 
     // the time it took for tyhe player to click on the ghost
-
     player = { ...player, time: playertime }
     gamesession.clicks.push({ ...player, id: this.id });
 
@@ -41,21 +44,31 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
     // emit your time to the other player
     this.broadcast.to(gamesessionid).emit('player:time', playertime);
 
+
+    //Function for random number
+    function getRandomNumber(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     //check if both players clicked on the ghost
     if (gamesession.clicks.length == 2) {
         console.log("somebody won a turn")
         console.log(gamesession)
+
         //add one to turn
         gamesession.turn++
 
+        //randomize position
+        randomTop = getRandomNumber(5, 95);
+        randomLeft = getRandomNumber(5, 95);
+
+        console.log("GAMESESSION POSITION:", gamesession.position)
+        gamesession.position = [randomTop, randomLeft]
 
         //check wich one of the players who are on index 0 (the winner)
         const winningPlayerId = gamesession.clicks[0].id;
         const currentId = this.id;
         const otherPlayerId = Object.values(gamesession.players).find(obj => obj.id !== this.id).id;
-        console.log(otherPlayerId)
-        console.log(currentId)
-        console.log(gamesession);
 
 
         //add one point and the time
@@ -74,6 +87,12 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
 //Handle the player when they join the game
 const handleUserJoined = function (playername, turn, callback) {
+
+    //Function for random number
+    function getRandomNumber(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     let joinRoomId;
     // Loop through gamesessions to find an empty room
     gamesessions.forEach((gamesession) => {
@@ -84,14 +103,17 @@ const handleUserJoined = function (playername, turn, callback) {
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
-
         }
     })
 
     // If no empty room found, create a new one and add to gamesession array.
     if (!joinRoomId) {
         joinRoomId = makeid(5);
-        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {} });
+
+        randomLeft = getRandomNumber(5, 95);
+        randomTop = getRandomNumber(5, 95);
+
+        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {}, position: [randomLeft, randomTop] });
     }
 
     // Find the gamesession and add the player to it

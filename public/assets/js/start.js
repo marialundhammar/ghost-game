@@ -7,7 +7,7 @@ const playAgain = document.querySelector('#playAgain');
 
 const yesBtn = document.querySelector('#yes-btn');
 const noBtn = document.querySelector('#no-btn');
-
+let position = [];
 
 let player = null;
 let gamesession = null;
@@ -44,8 +44,8 @@ let int;
 let intTwo;
 
 //get grid width and height
-let gridWidth;
-let gridHeight;
+let randomTop;
+let randomLeft;
 let bothplayers;
 
 // update user list
@@ -56,9 +56,9 @@ const updateUserList = players => {
     if (Object.keys(players).length == 2) {
 
         audio.play();
-        
+
         console.log("Two players!");
-        bothplayers=players;
+        bothplayers = players;
         //hide waiting view
         waitingEl.classList.add('display-none');
 
@@ -86,6 +86,17 @@ const updateUserList = players => {
 
         score1.innerHTML = "0 " + " - ";
         score2.innerHTML = "0 ";
+
+        //randomize position
+        randomTop = gamesession.position[0];
+        randomLeft = gamesession.position[1];
+
+        console.log("GAMESESSION:", gamesession)
+
+        console.log("Randomleft: " + randomLeft);
+
+        ghost.style.left = randomLeft + '%';
+        ghost.style.top = randomTop + '%'
 
         //Start game
         gameFunction();
@@ -193,18 +204,6 @@ function getRandomNumber(min, max) {
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
 
-    gridWidth = grid.clientWidth - 50;
-    gridHeight = grid.clientHeight - 50;
-
-    //randomize position
-    randomTop = getRandomNumber(0, gridHeight);
-    randomLeft = getRandomNumber(0, gridWidth)
-
-    console.log("Randomleft: " + randomLeft);
-
-    ghost.style.left = randomLeft + 'px';
-    ghost.style.top = randomTop + 'px'
-
     console.log(ghost);
 
     //show ghost
@@ -230,10 +229,21 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     const currentPlayer = players[playerId];
     const winningPlayer = players[winningPlayerId];
     const otherPlayer = players[otherPlayerId];
+    position = gamesession.position;
 
-    console.log(winningPlayer.name + " won" + " with the time " + winningPlayer.time + " current score " + winningPlayer.points);
+    console.log("THIS IS RANDOM POSITION", position)
 
-    console.log('THIS IS BOTHPLAYERS', players)
+    //randomize position
+    randomTop = position[0];
+    randomLeft = position[1];
+
+    console.log("GAMESESSION:", gamesession)
+
+    console.log("Randomleft: " + randomLeft);
+
+    ghost.style.left = randomLeft + '%';
+    ghost.style.top = randomTop + '%'
+
 
     score1.innerHTML = currentPlayer.points + ' -';
     score2.innerHTML = otherPlayer.points;
@@ -248,22 +258,22 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         gameWrapperEl.classList.add('display-none');
         winnerWrapper.classList.remove("display-none");
 
-        if(currentPlayer.points > otherPlayer.points) {
-        console.log("Player who won: ", currentPlayer.name);
-        winnerEl.innerHTML = `Congratulations ${currentPlayer.name}!🥳`;
-        
-       } else if (currentPlayer.points < otherPlayer.points) {
-        console.log("Player who won:", otherPlayer.name);
-        winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
-       } else if (currentPlayer.points == otherPlayer.points) {
-        winnerEl.innerHTML = `OMG! It's a tie!🤯`;
-       }
+        if (currentPlayer.points > otherPlayer.points) {
+            console.log("Player who won: ", currentPlayer.name);
+            winnerEl.innerHTML = `Congratulations ${currentPlayer.name}!🥳`;
 
-        setTimeout(function() {
+        } else if (currentPlayer.points < otherPlayer.points) {
+            console.log("Player who won:", otherPlayer.name);
+            winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
+        } else if (currentPlayer.points == otherPlayer.points) {
+            winnerEl.innerHTML = `OMG! It's a tie!🤯`;
+        }
+
+        setTimeout(function () {
             playAgain.classList.remove('display-none');
             winnerWrapper.classList.add('display-none');
         }, 4000);
-        
+
         console.log(gamesession.turn)
         //gamesession.turn = 2;
     }
