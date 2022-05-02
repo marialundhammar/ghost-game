@@ -7,7 +7,7 @@ const playAgain = document.querySelector('#playAgain');
 
 const yesBtn = document.querySelector('#yes-btn');
 const noBtn = document.querySelector('#no-btn');
-
+let position = [];
 
 let player = null;
 let gamesession = null;
@@ -197,8 +197,8 @@ function makeGhostAppear() {
     gridHeight = grid.clientHeight - 50;
 
     //randomize position
-    randomTop = getRandomNumber(0, gridHeight);
-    randomLeft = getRandomNumber(0, gridWidth)
+    randomTop = position[0];
+    randomLeft = position[1];
 
     console.log("Randomleft: " + randomLeft);
 
@@ -230,10 +230,9 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     const currentPlayer = players[playerId];
     const winningPlayer = players[winningPlayerId];
     const otherPlayer = players[otherPlayerId];
-    const position = gamesession.position;
+    position = gamesession.position;
 
-    console.log("THIS IS RANDOM TOP", position)
-    console.log("THIS IS PLAYERS", players)
+    console.log("THIS IS RANDOM POSITION", position)
 
     score1.innerHTML = currentPlayer.points + ' -';
     score2.innerHTML = otherPlayer.points;

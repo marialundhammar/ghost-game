@@ -62,8 +62,6 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
         const randomTop = getRandomNumber(0, gridHeight);
         const randomLeft = getRandomNumber(0, gridWidth)
 
-        console.log("THIS IS RANDOM TOP", randomTop)
-
         gamesession.position = [randomTop, randomLeft]
 
         //check wich one of the players who are on index 0 (the winner)
