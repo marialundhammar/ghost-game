@@ -19,6 +19,14 @@ function makeid(length) {
 // Create an empty array of gamesessions that will be populated as players join.
 let io = null;
 const gamesessions = [];
+let gridHeight;
+let gridWidth;
+
+
+const handlePosition = function (newGridWidth, newGridHeight) {
+    gridHeight = newGridHeight;
+    gridWidth = newGridWidth;
+}
 
 //Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
@@ -39,8 +47,7 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
     // emit your time to the other player
     this.broadcast.to(gamesessionid).emit('player:time', playertime);
-    const gridWidth = 300;
-    const gridHeight = 400;
+
 
     //Function for random number
     function getRandomNumber(min, max) {
@@ -102,8 +109,11 @@ const handleUserJoined = function (playername, turn, callback) {
     // If no empty room found, create a new one and add to gamesession array.
     if (!joinRoomId) {
         joinRoomId = makeid(5);
-        positionX = 109;
-        positionY = 108
+
+        const positionX = 100;
+        const positionY = 100;
+
+
         gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {}, position: [positionX, positionY] });
     }
 
@@ -169,6 +179,8 @@ module.exports = function (socket, _io) {
 
     // handle player score
     socket.on('player:points', handlePlayerPoints);
+
+    socket.on("game: dimension", handlePosition)
 
     //socket.on('player:kickout', handleDisconnect);
 }

@@ -196,6 +196,9 @@ function makeGhostAppear() {
     gridWidth = grid.clientWidth - 50;
     gridHeight = grid.clientHeight - 50;
 
+    socket.emit("game: dimension", gridWidth, gridHeight)
+
+
     //randomize position
     randomTop = position[0];
     randomLeft = position[1];
