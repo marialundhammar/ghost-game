@@ -32,7 +32,6 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
     //Push the players id, what turn it is and 
     // the time it took for tyhe player to click on the ghost
-
     player = { ...player, time: playertime }
     gamesession.clicks.push({ ...player, id: this.id });
 
@@ -40,22 +39,37 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
     // emit your time to the other player
     this.broadcast.to(gamesessionid).emit('player:time', playertime);
+    const gridWidth = 300;
+    const gridHeight = 400;
+
+    //Function for random number
+    function getRandomNumber(min, max) {
+        return Math.random() * (max - min) + min;
+    }
 
     //check if both players clicked on the ghost
     if (gamesession.clicks.length == 2) {
         console.log("somebody won a turn")
         console.log(gamesession)
+
         //add one to turn
         gamesession.turn++
 
+
+
+
+        //randomize position
+        const randomTop = getRandomNumber(0, gridHeight);
+        const randomLeft = getRandomNumber(0, gridWidth)
+
+        console.log("THIS IS RANDOM TOP", randomTop)
+
+        gamesession.position = [randomTop, randomLeft]
 
         //check wich one of the players who are on index 0 (the winner)
         const winningPlayerId = gamesession.clicks[0].id;
         const currentId = this.id;
         const otherPlayerId = Object.values(gamesession.players).find(obj => obj.id !== this.id).id;
-        console.log(otherPlayerId)
-        console.log(currentId)
-        console.log(gamesession);
 
 
         //add one point and the time
@@ -63,7 +77,7 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
         //
 
         // emit the winner and the players
-        io.to(gamesessionid).emit('player:win', this.id, winningPlayerId, otherPlayerId, gamesession);
+        io.to(gamesessionid).emit('player:win', this.id, winningPlayerId, otherPlayerId, gamesession, randomTop);
 
         //reset playerclicks
         gamesession.clicks = [];
@@ -84,14 +98,15 @@ const handleUserJoined = function (playername, turn, callback) {
         // If there are less than 2 players in a room, set the id to join to that room.
         if (numClients < 2) {
             joinRoomId = gamesession.id;
-
         }
     })
 
     // If no empty room found, create a new one and add to gamesession array.
     if (!joinRoomId) {
         joinRoomId = makeid(5);
-        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {} });
+        positionX = 109;
+        positionY = 108
+        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {}, position: [positionX, positionY] });
     }
 
     // Find the gamesession and add the player to it

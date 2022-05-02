@@ -56,9 +56,9 @@ const updateUserList = players => {
     if (Object.keys(players).length == 2) {
 
         audio.play();
-        
+
         console.log("Two players!");
-        bothplayers=players;
+        bothplayers = players;
         //hide waiting view
         waitingEl.classList.add('display-none');
 
@@ -230,10 +230,10 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     const currentPlayer = players[playerId];
     const winningPlayer = players[winningPlayerId];
     const otherPlayer = players[otherPlayerId];
+    const position = gamesession.position;
 
-    console.log(winningPlayer.name + " won" + " with the time " + winningPlayer.time + " current score " + winningPlayer.points);
-
-    console.log('THIS IS BOTHPLAYERS', players)
+    console.log("THIS IS RANDOM TOP", position)
+    console.log("THIS IS PLAYERS", players)
 
     score1.innerHTML = currentPlayer.points + ' -';
     score2.innerHTML = otherPlayer.points;
@@ -248,22 +248,22 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
         gameWrapperEl.classList.add('display-none');
         winnerWrapper.classList.remove("display-none");
 
-        if(currentPlayer.points > otherPlayer.points) {
-        console.log("Player who won: ", currentPlayer.name);
-        winnerEl.innerHTML = `Congratulations ${currentPlayer.name}!🥳`;
-        
-       } else if (currentPlayer.points < otherPlayer.points) {
-        console.log("Player who won:", otherPlayer.name);
-        winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
-       } else if (currentPlayer.points == otherPlayer.points) {
-        winnerEl.innerHTML = `OMG! It's a tie!🤯`;
-       }
+        if (currentPlayer.points > otherPlayer.points) {
+            console.log("Player who won: ", currentPlayer.name);
+            winnerEl.innerHTML = `Congratulations ${currentPlayer.name}!🥳`;
 
-        setTimeout(function() {
+        } else if (currentPlayer.points < otherPlayer.points) {
+            console.log("Player who won:", otherPlayer.name);
+            winnerEl.innerHTML = `Congratulations ${otherPlayer.name}!🥳`;
+        } else if (currentPlayer.points == otherPlayer.points) {
+            winnerEl.innerHTML = `OMG! It's a tie!🤯`;
+        }
+
+        setTimeout(function () {
             playAgain.classList.remove('display-none');
             winnerWrapper.classList.add('display-none');
         }, 4000);
-        
+
         console.log(gamesession.turn)
         //gamesession.turn = 2;
     }
