@@ -44,8 +44,8 @@ let int;
 let intTwo;
 
 //get grid width and height
-let gridWidth;
-let gridHeight;
+let randomTop;
+let randomLeft;
 let bothplayers;
 
 // update user list
@@ -86,6 +86,17 @@ const updateUserList = players => {
 
         score1.innerHTML = "0 " + " - ";
         score2.innerHTML = "0 ";
+
+        //randomize position
+        randomTop = gamesession.position[0];
+        randomLeft = gamesession.position[1];
+
+        console.log("GAMESESSION:", gamesession)
+
+        console.log("Randomleft: " + randomLeft);
+
+        ghost.style.left = randomLeft + '%';
+        ghost.style.top = randomTop + '%'
 
         //Start game
         gameFunction();
@@ -193,21 +204,6 @@ function getRandomNumber(min, max) {
 //FUNCTION TO MAKE GHOST APPEAR
 function makeGhostAppear() {
 
-    gridWidth = grid.clientWidth - 50;
-    gridHeight = grid.clientHeight - 50;
-
-    socket.emit("game: dimension", gridWidth, gridHeight)
-
-
-    //randomize position
-    randomTop = position[0];
-    randomLeft = position[1];
-
-    console.log("Randomleft: " + randomLeft);
-
-    ghost.style.left = randomLeft + 'px';
-    ghost.style.top = randomTop + 'px'
-
     console.log(ghost);
 
     //show ghost
@@ -236,6 +232,18 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     position = gamesession.position;
 
     console.log("THIS IS RANDOM POSITION", position)
+
+    //randomize position
+    randomTop = position[0];
+    randomLeft = position[1];
+
+    console.log("GAMESESSION:", gamesession)
+
+    console.log("Randomleft: " + randomLeft);
+
+    ghost.style.left = randomLeft + '%';
+    ghost.style.top = randomTop + '%'
+
 
     score1.innerHTML = currentPlayer.points + ' -';
     score2.innerHTML = otherPlayer.points;

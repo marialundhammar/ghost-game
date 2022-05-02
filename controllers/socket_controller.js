@@ -19,14 +19,10 @@ function makeid(length) {
 // Create an empty array of gamesessions that will be populated as players join.
 let io = null;
 const gamesessions = [];
-let gridHeight;
-let gridWidth;
 
+let randomTop;
+let randomLeft;
 
-const handlePosition = function (newGridWidth, newGridHeight) {
-    gridHeight = newGridHeight;
-    gridWidth = newGridWidth;
-}
 
 //Recieves information when a player clicks the ghost
 const handlePlayerPoints = function (playertime, gamesessionid) {
@@ -62,13 +58,11 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
         //add one to turn
         gamesession.turn++
 
-
-
-
         //randomize position
-        const randomTop = getRandomNumber(0, gridHeight);
-        const randomLeft = getRandomNumber(0, gridWidth)
+        randomTop = getRandomNumber(5, 95);
+        randomLeft = getRandomNumber(5, 95);
 
+        console.log("GAMESESSION POSITION:", gamesession.position)
         gamesession.position = [randomTop, randomLeft]
 
         //check wich one of the players who are on index 0 (the winner)
@@ -82,7 +76,7 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
         //
 
         // emit the winner and the players
-        io.to(gamesessionid).emit('player:win', this.id, winningPlayerId, otherPlayerId, gamesession, randomTop);
+        io.to(gamesessionid).emit('player:win', this.id, winningPlayerId, otherPlayerId, gamesession);
 
         //reset playerclicks
         gamesession.clicks = [];
@@ -93,6 +87,12 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
 //Handle the player when they join the game
 const handleUserJoined = function (playername, turn, callback) {
+
+    //Function for random number
+    function getRandomNumber(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     let joinRoomId;
     // Loop through gamesessions to find an empty room
     gamesessions.forEach((gamesession) => {
@@ -110,11 +110,10 @@ const handleUserJoined = function (playername, turn, callback) {
     if (!joinRoomId) {
         joinRoomId = makeid(5);
 
-        const positionX = 100;
-        const positionY = 100;
+        randomLeft = getRandomNumber(5, 95);
+        randomTop = getRandomNumber(5, 95);
 
-
-        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {}, position: [positionX, positionY] });
+        gamesessions.push({ id: joinRoomId, turn: 0, clicks: [], players: {}, position: [randomLeft, randomTop] });
     }
 
     // Find the gamesession and add the player to it
@@ -179,8 +178,6 @@ module.exports = function (socket, _io) {
 
     // handle player score
     socket.on('player:points', handlePlayerPoints);
-
-    socket.on("game: dimension", handlePosition)
 
     //socket.on('player:kickout', handleDisconnect);
 }
