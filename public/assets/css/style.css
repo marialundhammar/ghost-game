@@ -111,6 +111,11 @@ body {
 	color: white;
 }
 
+#score {
+	display: flex;
+	flex-direction: column;
+}
+
 #score-board {
 	background-color: white;
 	color: black;

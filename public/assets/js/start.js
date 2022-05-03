@@ -84,9 +84,6 @@ const updateUserList = players => {
         timerDisplay.innerHTML = `00 : 00`;
         timerDisplayTwo.innerHTML = `00 : 00`;
 
-        score1.innerHTML = "0 " + " - ";
-        score2.innerHTML = "0 ";
-
         //randomize position
         randomTop = gamesession.position[0];
         randomLeft = gamesession.position[1];
@@ -245,8 +242,8 @@ socket.on('player:win', (playerId, winningPlayerId, otherPlayerId, gamesession) 
     ghost.style.top = randomTop + '%'
 
 
-    score1.innerHTML = currentPlayer.points + ' -';
-    score2.innerHTML = otherPlayer.points;
+    score2.innerHTML = currentPlayer.name + ": " + currentPlayer.points;
+    score1.innerHTML = otherPlayer.name + ": " + otherPlayer.points;
 
     console.log('This is the player id: ' + playerId)
     if (gamesession.turn < 10) {
