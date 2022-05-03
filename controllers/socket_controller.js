@@ -67,7 +67,7 @@ const handlePlayerPoints = function (playertime, gamesessionid) {
 
         //check wich one of the players who are on index 0 (the winner)
         const winningPlayerId = gamesession.clicks[0].id;
-        const currentId = this.id;
+        const currentPlayerId = this.id;
         const otherPlayerId = Object.values(gamesession.players).find(obj => obj.id !== this.id).id;
 
 
